@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Fabricación y venta de ventanas de PVC termopanel. Medida exacta, instalación y asesoría." />
+  <title>FRAME PVC DEPOT — Ventanas termopanel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="#inicio" aria-label="FRAME PVC DEPOT">
+      <img class="logo-mark" src="img/logo-frame-pvc.png" alt="" width="512" height="512" />
+      <span class="logo-name">
+        <span class="logo-name-main">FRAME PVC</span>
+        <span class="logo-name-sub">DEPOT</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Principal">
+      <a href="#stock">Ventanas en stock</a>
+      <a href="#calculadora">Calculadora de ventanas</a>
+      <a href="#instalacion">Instálalo tú mismo</a>
+      <a href="#accesorios">Accesorios y perfiles para fabricantes</a>
+      <a href="#vidrios">Fabricación de vidrios termopanel</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio" aria-label="Presentación">
+      <div class="hero-compare" role="group" aria-label="Antes y después de la instalación">
+        <figure class="hero-shot">
+          <img
+            src="img/antes.png"
+            alt="Casa de madera antes: ventanas antiguas de marco oscuro"
+            width="1200"
+            height="675"
+          />
+          <figcaption>Antes</figcaption>
+        </figure>
+        <figure class="hero-shot">
+          <img
+            src="img/despues.png"
+            alt="Misma casa después: ventanas PVC blancas correderas instaladas"
+            width="1200"
+            height="675"
+          />
+          <figcaption>Después</figcaption>
+        </figure>
+      </div>
+      <div class="hero-content">
+        <h1>El cambio que se ve y <span class="hero-underline">se siente</span></h1>
+        <p class="lead">De ventanas que gastan a ventanas que ahorran, aíslan y revalorizan tu casa.</p>
+        <div class="cta-group">
+          <a class="btn btn-primary" href="#contacto">Pedir cotización</a>
+          <a class="btn btn-ghost" href="#stock">Ver stock</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-benefits" id="beneficios">
+      <div class="section-intro">
+        <h2>Por qué PVC termopanel</h2>
+        <p>Porque no solo es una ventana: es una casa temperada todo el año, en silencio y sin mantención. Nuestro PVC no se deforma, no se decolora, y aísla 4 veces más que el aluminio.</p>
+      </div>
+      <ul class="benefit-list">
+        <li>
+          <strong>Robustas y elegantes</strong>
+          <span>Diseño moderno con 25 años de vida útil. Cero pintura, cero óxido.</span>
+        </li>
+        <li>
+          <strong>Menos frío, menos calor</strong>
+          <span>Ahorra hasta 40% de calefacción. Confort real en invierno y verano.</span>
+        </li>
+        <li>
+          <strong>Menos ruido</strong>
+          <span>Reduce hasta 35 dB del ruido exterior. Duerme y trabaja en paz.</span>
+        </li>
+        <li>
+          <strong>Más valor</strong>
+          <span>La mejora con mejor retorno. Aumenta la plusvalía y eficiencia de tu propiedad.</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section section-stock" id="stock">
+      <div class="stock-hero">
+        <div class="stock-backdrop" aria-hidden="true">
+          <img src="img/stock-titulo.jpg" alt="" />
+        </div>
+        <div class="section-intro stock-hero-text">
+          <h2>Ventanas listas en stock</h2>
+          <p>Modelos fabricados, listos para entrega. Medidas estándar con precio publicado.</p>
+        </div>
+      </div>
+      <aside class="shop-cart" id="cart-stock" aria-label="Carro de compra de ventanas">
+        <div class="shop-cart-head">
+          <h3>Carro de ventanas</h3>
+          <p class="shop-cart-count" data-cart-count>0 ítems</p>
+        </div>
+        <ul class="shop-cart-list" data-cart-list></ul>
+        <div class="shop-cart-foot">
+          <p class="shop-cart-total">Total: <strong data-cart-total>$0</strong></p>
+          <a class="btn btn-primary shop-cart-wa" data-cart-wa href="#" target="_blank" rel="noopener noreferrer">Pedir por WhatsApp</a>
+        </div>
+      </aside>
+      <div class="stock-gallery" id="stock-gallery"></div>
+      <p class="stock-note">
+        Para cambiar fotos y precios edita <code>stock.js</code> y reemplaza las imágenes en <code>img/stock/</code> (01.jpg a 13.jpg).
+      </p>
+    </section>
+
+    <section class="section section-calc" id="calculadora">
+      <div class="acc-header calc-header">
+        <header class="calc-heading section-intro">
+          <h2>Cotiza tu proyecto</h2>
+          <h3 class="calc-subtitle">Calculadora de ventanas</h3>
+          <p>Elige tipo, color y medidas (ancho × alto en metros) para estimar el valor.</p>
+        </header>
+      </div>
+
+      <div class="calc-body">
+        <div class="calc-main">
+          <form class="calc-form" id="form-calculadora">
+            <label>
+              Tipo de ventana
+              <select name="tipo" id="calc-tipo" required>
+                <option value="corredera">Ventana corredera</option>
+                <option value="proyectante">Ventana proyectante</option>
+                <option value="puerta">Ventana puerta</option>
+                <option value="fija">Ventana fija</option>
+              </select>
+            </label>
+
+            <label>
+              Color
+              <select name="color" id="calc-color" required>
+                <option value="blanco">Blanco</option>
+                <option value="nogal">Nogal</option>
+                <option value="roble-dorado">Roble dorado</option>
+                <option value="antracita">Antracita</option>
+                <option value="negro">Negro</option>
+              </select>
+            </label>
+
+            <label>
+              Ancho (m)
+              <input type="number" name="ancho" id="calc-ancho" min="0.4" max="4" step="0.01" value="1.20" required inputmode="decimal" />
+            </label>
+
+            <label>
+              Alto (m)
+              <input type="number" name="alto" id="calc-alto" min="0.4" max="3" step="0.01" value="1.20" required inputmode="decimal" />
+            </label>
+          </form>
+
+          <div class="calc-result" id="calc-result" aria-live="polite">
+            <p class="calc-summary" id="calc-summary"></p>
+            <p class="calc-total" id="calc-total"></p>
+            <button type="button" class="btn btn-primary" id="calc-add-cart">Agregar al carro</button>
+            <a
+              class="btn calc-visit-btn"
+              href="https://wa.me/56950187327?text=Hola%2C%20quiero%20solicitar%20una%20visita%20t%C3%A9cnica%20a%20domicilio%20para%20medir%20y%20cotizar%20ventanas%20PVC%20termopanel."
+              target="_blank"
+              rel="noopener noreferrer"
+            >Solicita una visita técnica a domicilio</a>
+            <img class="pay-logo" src="img/transbank.png" alt="Transbank" width="160" height="48" loading="lazy" />
+          </div>
+        </div>
+
+        <div class="calc-preview">
+          <figure class="calc-ventana">
+            <img id="calc-ventana-img" src="img/ventana-blanco.jpg" alt="Ventana corredera PVC según color elegido" width="900" height="900" loading="lazy" />
+          </figure>
+          <aside class="laminas-muestra calc-colores" aria-label="Muestra de colores">
+            <p class="laminas-title">Muestra de colores</p>
+            <ul class="laminas-list">
+              <li>
+                <span>Blanco</span>
+                <i class="lamina-swatch lamina-blanco" aria-hidden="true"></i>
+              </li>
+              <li>
+                <span>Lámina<br />Roble Dorado</span>
+                <i class="lamina-swatch lamina-roble" aria-hidden="true"></i>
+              </li>
+              <li>
+                <span>Lámina<br />Nogal</span>
+                <i class="lamina-swatch lamina-nogal" aria-hidden="true"></i>
+              </li>
+              <li>
+                <span>Lámina<br />Antracita</span>
+                <i class="lamina-swatch lamina-antracita" aria-hidden="true"></i>
+              </li>
+              <li>
+                <span>Lámina<br />Negro</span>
+                <i class="lamina-swatch lamina-negro" aria-hidden="true"></i>
+              </li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+
+      <aside class="shop-cart" id="cart-calc" aria-label="Carro de compra de cotización">
+        <div class="shop-cart-head">
+          <h3>Carro de cotización</h3>
+          <p class="shop-cart-count" data-cart-count>0 ítems</p>
+        </div>
+        <ul class="shop-cart-list" data-cart-list></ul>
+        <div class="shop-cart-foot">
+          <p class="shop-cart-total">Total: <strong data-cart-total>$0</strong></p>
+          <a class="btn btn-primary shop-cart-wa" data-cart-wa href="#" target="_blank" rel="noopener noreferrer">Pedir por WhatsApp</a>
+        </div>
+      </aside>
+
+      <p class="stock-note">
+        Las tarifas se editan en <code>precios.js</code> (precio por m², colores y mínimo). Valor referencial; confirma stock y fabricación.
+      </p>
+    </section>
+
+    <section class="section section-install" id="instalacion">
+      <div class="section-intro">
+        <h2>Instálalo tú mismo</h2>
+        <p>Hágalo usted mismo y ahórrese el costo de instalación de su ventana PVC.</p>
+      </div>
+
+      <ol class="install-steps">
+        <li>
+          <figure>
+            <img src="img/instalacion/01.jpg" alt="Paso 1: instalar el marco en el rasgo" width="800" height="800" loading="lazy" />
+            <figcaption>
+              <span class="step-num">1</span>
+              <strong>Instala el marco en el rasgo</strong>
+              <span>Coloca el marco de la ventana en el vano, nivelado y centrado.</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure>
+            <img src="img/instalacion/02.jpg" alt="Paso 2: puesto el marco en el vano, perforar y atornillar" width="800" height="800" loading="lazy" />
+            <figcaption>
+              <span class="step-num">2</span>
+              <strong>Puesto el marco en el vano</strong>
+              <span>Hace dos perforaciones en todos sus lados interiores del marco y atornilla.</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure>
+            <img src="img/instalacion/03.jpg" alt="Paso 3: aplicar espuma o silicona entre marco y muro" width="800" height="800" loading="lazy" />
+            <figcaption>
+              <span class="step-num">3</span>
+              <strong>Aplica espuma o silicona</strong>
+              <span>Sella entre el marco y el muro para evitar filtraciones de aire y agua.</span>
+            </figcaption>
+          </figure>
+        </li>
+        <li>
+          <figure>
+            <img src="img/instalacion/04.jpg" alt="Paso 4: colocar hojas correderas" width="800" height="800" loading="lazy" />
+            <figcaption>
+              <span class="step-num">4</span>
+              <strong>Coloca las hojas correderas</strong>
+              <span>Monta las hojas en el riel del marco y prueba el deslizamiento.</span>
+            </figcaption>
+          </figure>
+        </li>
+      </ol>
+    </section>
+
+    <section class="section section-stock section-accesorios" id="accesorios">
+      <div class="acc-header">
+        <div class="section-intro">
+          <h2>Accesorios y perfiles para fabricantes</h2>
+          <p>Perfiles proyectante, perfiles correderas, refuerzo y cerraderos, manillas, cremonas 15mm corredera, cremonas proyectante y brazos ferritico, accesorios ventanas y puertas. Foto, detalle y precio de cada ítem.</p>
+        </div>
+        <aside class="laminas-muestra" aria-label="Muestras de lámina">
+          <ul class="laminas-list">
+            <li>
+              <span>Blanco</span>
+              <i class="lamina-swatch lamina-blanco" aria-hidden="true"></i>
+            </li>
+            <li>
+              <span>Lámina<br />Roble Dorado</span>
+              <i class="lamina-swatch lamina-roble" aria-hidden="true"></i>
+            </li>
+            <li>
+              <span>Lámina<br />Nogal</span>
+              <i class="lamina-swatch lamina-nogal" aria-hidden="true"></i>
+            </li>
+            <li>
+              <span>Lámina<br />Antracita</span>
+              <i class="lamina-swatch lamina-antracita" aria-hidden="true"></i>
+            </li>
+            <li>
+              <span>Lámina<br />Negro</span>
+              <i class="lamina-swatch lamina-negro" aria-hidden="true"></i>
+            </li>
+          </ul>
+        </aside>
+      </div>
+
+      <div class="acc-filters" id="acc-filters" role="group" aria-label="Filtrar accesorios">
+        <button type="button" class="acc-filter is-active" data-filter="todos">Todos</button>
+        <button type="button" class="acc-filter" data-filter="perfiles proyectante">Perfiles proyectante</button>
+        <button type="button" class="acc-filter" data-filter="perfiles correderas">Perfiles correderas</button>
+        <button type="button" class="acc-filter" data-filter="refuerzo y cerraderos">Refuerzo y cerraderos</button>
+        <button type="button" class="acc-filter" data-filter="manillas">Manillas</button>
+        <button type="button" class="acc-filter" data-filter="cremonas 15mm corredera">Cremonas 15mm corredera</button>
+        <button type="button" class="acc-filter" data-filter="cremonas proyectante y brazos ferritico">Cremonas proyectante y brazos ferritico</button>
+        <button type="button" class="acc-filter" data-filter="accesorios ventanas y puertas">Accesorios ventanas y puertas</button>
+      </div>
+
+      <aside class="shop-cart" id="cart-acc" aria-label="Carro de compra de accesorios y perfiles">
+        <div class="shop-cart-head">
+          <h3>Carro de accesorios y perfiles</h3>
+          <p class="shop-cart-count" data-cart-count>0 ítems</p>
+        </div>
+        <ul class="shop-cart-list" data-cart-list></ul>
+        <div class="shop-cart-foot">
+          <p class="shop-cart-total">Total: <strong data-cart-total>$0</strong></p>
+          <a class="btn btn-primary shop-cart-wa" data-cart-wa href="#" target="_blank" rel="noopener noreferrer">Pedir por WhatsApp</a>
+          <a
+            class="btn calc-visit-btn"
+            href="https://wa.me/56950187327?text=Hola%2C%20quiero%20solicitar%20una%20visita%20t%C3%A9cnica%20a%20domicilio%20para%20medir%20y%20cotizar%20ventanas%20PVC%20termopanel."
+            target="_blank"
+            rel="noopener noreferrer"
+          >Solicita una visita técnica a domicilio</a>
+        </div>
+      </aside>
+
+      <div class="stock-gallery acc-gallery" id="acc-gallery"></div>
+      <p class="stock-note">
+        Edita productos en <code>accesorios.js</code> y cambia fotos en <code>img/accesorios/</code> (01.jpg a 30.jpg).
+      </p>
+    </section>
+
+    <section class="section section-vidrios" id="vidrios">
+      <div class="section-intro">
+        <h2>Fabricación de vidrios termopanel</h2>
+        <p>Fabricamos vidrio termopanel a medida para ventanas, puertas y proyectos de carpintería. Doble vidrio con cámara de aire para mejor aislación térmica y acústica.</p>
+      </div>
+      <figure class="vidrios-photo">
+        <img
+          src="img/vidrio-termopanel.jpg"
+          alt="Vidrio termopanel de doble panel con separador y sellado perimetral"
+          width="1600"
+          height="900"
+          loading="lazy"
+        />
+        <figcaption>Doble vidrio con cámara de aire: aislación térmica y acústica.</figcaption>
+      </figure>
+      <ul class="benefit-list">
+        <li>
+          <strong>A medida</strong>
+          <span>Cortamos y armamos según tus medidas exactas.</span>
+        </li>
+        <li>
+          <strong>Doble vidrio</strong>
+          <span>Cámara de aire que reduce frío, calor y ruido.</span>
+        </li>
+        <li>
+          <strong>Para fabricantes</strong>
+          <span>Suministro de termopanel para armado de ventanas PVC.</span>
+        </li>
+        <li>
+          <strong>Calidad constante</strong>
+          <span>Sellado hermético y acabado limpio listo para instalar.</span>
+        </li>
+      </ul>
+      <p class="vidrios-cta">
+        <a class="btn btn-primary" href="#contacto">Consultar fabricación</a>
+        <a
+          class="btn calc-visit-btn"
+          href="https://wa.me/56950187327?text=Hola%2C%20quiero%20solicitar%20una%20visita%20t%C3%A9cnica%20a%20domicilio%20para%20medir%20y%20cotizar%20ventanas%20PVC%20termopanel."
+          target="_blank"
+          rel="noopener noreferrer"
+        >Solicita una visita técnica a domicilio</a>
+      </p>
+    </section>
+
+    <section class="section section-contact" id="contacto">
+      <div class="section-intro">
+        <h2>Escríbenos</h2>
+        <p>Cuéntanos medidas aproximadas o envíanos una foto del vano. Te respondemos rápido.</p>
+      </div>
+      <form class="contact-form" id="form-contacto" novalidate>
+        <label>
+          Nombre
+          <input type="text" name="nombre" required autocomplete="name" placeholder="Tu nombre" />
+        </label>
+        <label>
+          Teléfono o WhatsApp
+          <input type="tel" name="telefono" required autocomplete="tel" placeholder="+56 9 5018 7327" />
+        </label>
+        <label class="full">
+          Mensaje
+          <textarea name="mensaje" rows="4" required placeholder="Tipo de ventana, cantidad, comuna..."></textarea>
+        </label>
+        <button class="btn btn-primary" type="submit">Enviar por WhatsApp</button>
+        <a
+          class="btn calc-visit-btn"
+          href="https://wa.me/56950187327?text=Hola%2C%20quiero%20solicitar%20una%20visita%20t%C3%A9cnica%20a%20domicilio%20para%20medir%20y%20cotizar%20ventanas%20PVC%20termopanel."
+          target="_blank"
+          rel="noopener noreferrer"
+        >Solicita una visita técnica a domicilio</a>
+      </form>
+      <p class="contact-note">
+        O llámanos al <a href="tel:+56950187327">+56 9 5018 7327</a>
+        · <a href="mailto:hola@framepvc.cl">hola@framepvc.cl</a>
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p><strong>FRAME PVC DEPOT</strong> — Fabricación y venta de ventanas PVC termopanel</p>
+    <p class="fine">Stock: <code>stock.js</code> · Accesorios: <code>accesorios.js</code> · Calculadora: <code>precios.js</code> · WhatsApp: <code>script.js</code>.</p>
+  </footer>
+
+  <script src="stock.js"></script>
+  <script src="accesorios.js"></script>
+  <script src="precios.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
