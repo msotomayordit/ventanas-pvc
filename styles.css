@@ -52,8 +52,10 @@ a:hover {
 }
 
 .site-header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 20;
   display: flex;
   align-items: center;
@@ -64,6 +66,10 @@ a:hover {
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
   overflow: visible;
+}
+
+main {
+  padding-top: 4.95rem;
 }
 
 .logo {
@@ -1495,6 +1501,10 @@ a:hover {
     font-size: 0.98rem;
   }
 
+  main {
+    padding-top: 3.9rem;
+  }
+
   body.menu-open {
     overflow: hidden;
   }
@@ -1623,6 +1633,11 @@ a:hover {
   .mobile-quick-nav span {
     color: var(--ink);
     font-size: 1.05rem;
+  }
+
+  .mobile-quick-nav a:last-child span {
+    font-size: 0.9rem;
+    filter: grayscale(1);
   }
 
   .hero {
