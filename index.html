@@ -156,6 +156,7 @@
 </div>
 </div>
 </div>
+<section class="recent-products" id="recent-products" hidden aria-labelledby="recent-title"><div class="recent-head"><div><p class="eyebrow">Retoma tu búsqueda</p><h3 id="recent-title">Vistos recientemente</h3></div><button type="button" id="clear-recent">Limpiar</button></div><div class="recent-rail" id="recent-rail"></div></section>
 </section>
 <section class="config-section" id="configurador">
 <div class="shell">
@@ -326,6 +327,8 @@
 <a class="button whatsapp full is-disabled" id="cart-whatsapp" href="#" target="_blank" rel="noopener" aria-disabled="true">Enviar solicitud por WhatsApp</a>
 </div>
 </aside>
+<div class="compare-tray" id="compare-tray" hidden><div><strong>Comparar productos</strong><span id="compare-summary">0 de 3 seleccionados</span></div><div id="compare-thumbs"></div><button class="button primary" id="open-compare" type="button">Comparar</button><button class="icon-close" id="clear-compare" type="button" aria-label="Vaciar comparación">×</button></div>
+<dialog class="compare-dialog" id="compare-dialog" aria-labelledby="compare-title"><div class="compare-dialog-head"><div><p class="eyebrow">Decide con claridad</p><h2 id="compare-title">Comparar productos</h2></div><button class="icon-close" id="close-compare" type="button" aria-label="Cerrar comparación">×</button></div><div class="compare-content" id="compare-content"></div></dialog>
 <nav class="mobile-dock" aria-label="Accesos rápidos">
 <a href="#inicio"><span>&#8962;</span>Inicio</a><button type="button" data-open-sections><span>&#9776;</span>Secciones</button><button type="button" data-focus-search><span>&#8981;</span>Buscar</button><a href="#configurador"><span>&#9671;</span>Armar</a><button type="button" data-open-cart><span class="cart-symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 7H6"/><circle cx="9.5" cy="19" r="1.25"/><circle cx="17.5" cy="19" r="1.25"/></svg></span>Solicitud<b data-cart-count>0</b></button>
 </nav>
