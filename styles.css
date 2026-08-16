@@ -458,6 +458,41 @@ a:hover {
   width: 100%;
 }
 
+@media (max-width: 639px) {
+  .stock-gallery .stock-photo,
+  .stock-gallery .stock-photo--small {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+
+  .stock-gallery .stock-photo--full {
+    aspect-ratio: 1 / 1;
+    min-height: 18rem;
+  }
+
+  .stock-gallery .stock-photo--portrait {
+    aspect-ratio: 3 / 4;
+    min-height: 22rem;
+  }
+
+  .stock-gallery .stock-photo img,
+  .stock-gallery .stock-photo--small img {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    object-fit: contain;
+    object-position: center;
+    transform: none;
+  }
+
+  .stock-gallery .stock-photo:hover img,
+  .stock-gallery .stock-photo--small:hover img {
+    transform: none;
+  }
+}
+
 .stock-info h3 {
   margin: 0;
   font-family: var(--font-display);
