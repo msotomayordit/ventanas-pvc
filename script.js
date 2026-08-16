@@ -1,6 +1,34 @@
 // Cambia este número por tu WhatsApp real (código país + número, sin + ni espacios)
 const WHATSAPP = "56950187327";
 
+const menuToggle = document.getElementById("menu-toggle");
+const mainNav = document.getElementById("main-nav");
+const navOverlay = document.getElementById("nav-overlay");
+
+function closeMobileMenu() {
+  if (!menuToggle || !mainNav || !navOverlay) return;
+  menuToggle.setAttribute("aria-expanded", "false");
+  menuToggle.setAttribute("aria-label", "Abrir menú");
+  mainNav.classList.remove("is-open");
+  navOverlay.hidden = true;
+  document.body.classList.remove("menu-open");
+}
+
+if (menuToggle && mainNav && navOverlay) {
+  menuToggle.addEventListener("click", () => {
+    const opening = menuToggle.getAttribute("aria-expanded") !== "true";
+    menuToggle.setAttribute("aria-expanded", String(opening));
+    menuToggle.setAttribute("aria-label", opening ? "Cerrar menú" : "Abrir menú");
+    mainNav.classList.toggle("is-open", opening);
+    navOverlay.hidden = !opening;
+    document.body.classList.toggle("menu-open", opening);
+  });
+  navOverlay.addEventListener("click", closeMobileMenu);
+  mainNav.addEventListener("click", (event) => { if (event.target.closest("a")) closeMobileMenu(); });
+  document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeMobileMenu(); });
+  window.addEventListener("resize", () => { if (window.innerWidth >= 720) closeMobileMenu(); });
+}
+
 function formatMedida(ancho, alto) {
   const a = Number(ancho).toLocaleString("es-CL", {
     minimumFractionDigits: Number.isInteger(Number(ancho)) ? 0 : 1,

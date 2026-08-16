@@ -19,7 +19,8 @@
         <span class="logo-name-sub">DEPOT</span>
       </span>
     </a>
-    <nav class="nav" aria-label="Principal">
+    <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="Abrir menú"><span></span><span></span><span></span></button>
+    <nav class="nav" id="main-nav" aria-label="Principal">
       <a href="#stock">Ventanas en stock</a>
       <a href="#calculadora">Calculadora de ventanas</a>
       <a href="#instalacion">Instálalo tú mismo</a>
@@ -28,6 +29,7 @@
       <a href="#contacto">Contacto</a>
     </nav>
   </header>
+  <div class="nav-overlay" id="nav-overlay" hidden></div>
 
   <main>
     <section class="hero" id="inicio" aria-label="Presentación">
@@ -418,6 +420,14 @@
     <p><strong>FRAME PVC DEPOT</strong> — Fabricación y venta de ventanas PVC termopanel</p>
     <p class="fine">Stock: <code>stock.js</code> · Accesorios: <code>accesorios.js</code> · Calculadora: <code>precios.js</code> · WhatsApp: <code>script.js</code>.</p>
   </footer>
+
+  <nav class="mobile-quick-nav" aria-label="Accesos rápidos">
+    <a href="#inicio"><span aria-hidden="true">⌂</span>Inicio</a>
+    <a href="#stock"><span aria-hidden="true">▦</span>Stock</a>
+    <a href="#calculadora"><span aria-hidden="true">◇</span>Calcular</a>
+    <a href="#accesorios"><span aria-hidden="true">＋</span>Productos</a>
+    <a href="#contacto"><span aria-hidden="true">○</span>Contacto</a>
+  </nav>
 
   <script src="stock.js"></script>
   <script src="accesorios.js"></script>
