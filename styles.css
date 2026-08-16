@@ -35,3 +35,9 @@
 @media(prefers-reduced-motion:reduce){.hero-copy:after,.hero-media{animation:none}.hero-actions .button{transition:none}}
 @media(max-width:760px){.hero{min-height:calc(100svh - 174px - 64px);display:flex;align-items:center;padding-block:clamp(1.75rem,5vh,3rem);border-bottom:0}.hero:before{content:"FRAME / 01";left:auto;right:-.15rem;top:1.25rem;font-size:3.3rem;line-height:1;transform:none;writing-mode:vertical-rl;letter-spacing:-.1em}.hero-copy{width:100%;padding-left:1rem}.hero h1{margin:.35rem 0 1rem;font-size:clamp(2.5rem,11.7vw,3.75rem);line-height:1.02}.hero-copy>p:not(.eyebrow){max-width:34rem;font-size:.98rem;line-height:1.55}.hero-actions{grid-template-columns:1fr 1fr;margin:1.35rem 0}.hero-actions .button{min-height:50px;padding:.65rem .75rem;font-size:.86rem}.hero-actions .button:after{margin-left:.35rem}.trust-list{grid-template-columns:repeat(3,auto);justify-content:start;gap:.75rem;padding-top:.8rem;font-size:.72rem}.hero-media{display:none}.quick-categories{padding-top:clamp(2.75rem,8vw,4rem)}}
 @media(max-width:430px){.hero{min-height:calc(100svh - 156px - 64px)}.hero h1{font-size:clamp(2.35rem,11.3vw,3rem)}.hero-actions{grid-template-columns:1fr}.trust-list{grid-template-columns:1fr;gap:.3rem}.hero:before{opacity:.75}}
+
+/* Wordmark oficial FRAME PVC */
+.brand img{width:clamp(138px,12vw,182px);height:auto;aspect-ratio:1518/338;object-fit:contain}
+.footer-brand img{width:182px;filter:brightness(0) invert(1);opacity:.88}
+@media(max-width:760px){.brand img{width:clamp(112px,32vw,140px)}.footer-brand img{width:168px}}
+@media(max-width:430px){.brand img{width:118px}}
