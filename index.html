@@ -55,7 +55,7 @@
 <a class="nav-chip nav-config" href="#configurador">Arma tu ventana</a>
 </nav>
 <div class="payment-promo" aria-label="Beneficio de pago">
-<div class="payment-promo-track shell"><span class="payment-kicker">Financia tu proyecto</span><p><strong>Hasta 12 cuotas</strong> a precio contado con</p><img src="img/mercado-pago.svg" width="108" height="27" alt="Mercado Pago"><small>Consulta condiciones</small></div>
+<div class="payment-promo-track shell"><span class="payment-kicker">Financia tu proyecto</span><p><strong>Hasta 12 cuotas</strong> a precio contado con</p><img src="img/mercado-pago.svg" width="108" height="27" alt="Mercado Pago"><small>Pago coordinado después de confirmar disponibilidad</small></div>
 </div>
 </header>
 <main id="inicio">
@@ -104,30 +104,12 @@
 </fieldset>
 <fieldset>
 <legend>Tipo</legend>
-<div class="check-list">
-<label>
-<input type="checkbox" name="type" value="corredera"> Corredera</label>
-<label>
-<input type="checkbox" name="type" value="proyectante"> Proyectante</label>
-<label>
-<input type="checkbox" name="type" value="fija"> Fija</label>
-<label>
-<input type="checkbox" name="type" value="puerta"> Puerta</label>
+<div class="check-list" id="type-filters">
 </div>
 </fieldset>
 <fieldset>
 <legend>Color</legend>
-<div class="check-list">
-<label>
-<input type="checkbox" name="color" value="blanco"> Blanco</label>
-<label>
-<input type="checkbox" name="color" value="nogal"> Nogal</label>
-<label>
-<input type="checkbox" name="color" value="roble dorado"> Roble dorado</label>
-<label>
-<input type="checkbox" name="color" value="antracita"> Antracita</label>
-<label>
-<input type="checkbox" name="color" value="negro"> Negro</label>
+<div class="check-list" id="color-filters">
 </div>
 </fieldset>
 <fieldset>
@@ -140,11 +122,7 @@
 </fieldset>
 <fieldset>
 <legend>Disponibilidad</legend>
-<div class="check-list">
-<label>
-<input type="checkbox" name="availability" value="stock"> En stock</label>
-<label>
-<input type="checkbox" name="availability" value="fabricacion"> Fabricación</label>
+<div class="check-list" id="availability-filters">
 </div>
 </fieldset>
 <fieldset>
@@ -328,6 +306,10 @@
 <a href="#services-title" data-section-link><span>i</span><b>Servicios</b><small>Instalación y termopanel</small></a>
 <a href="https://wa.me/56950187327" target="_blank" rel="noopener"><span>&#9673;</span><b>Contacto</b><small>Habla con nuestro equipo</small></a>
 </nav>
+</aside>
+<aside class="product-drawer" id="product-drawer" aria-hidden="true" aria-labelledby="product-detail-title">
+<div class="drawer-head"><div><p class="eyebrow">Detalle del producto</p><h2 id="product-detail-title">Producto</h2></div><button class="icon-close" id="close-product" type="button" aria-label="Cerrar detalle">×</button></div>
+<div class="product-detail-panel" id="product-detail-panel"></div>
 </aside>
 <aside class="cart-drawer" id="cart-drawer" aria-hidden="true" aria-labelledby="cart-title">
 <div class="drawer-head">
