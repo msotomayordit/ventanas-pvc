@@ -41,3 +41,14 @@
 .footer-brand img{width:182px;filter:brightness(0) invert(1);opacity:.88}
 @media(max-width:760px){.brand img{width:clamp(112px,32vw,140px)}.footer-brand img{width:168px}}
 @media(max-width:430px){.brand img{width:118px}}
+
+/* Carrito lineal, liviano y coherente con la interfaz */
+.cart-trigger{height:46px;border:1px solid #b9c8ce;background:white;color:var(--ink);transition:border-color .2s,background .2s,transform .2s}
+.cart-trigger:hover{border-color:var(--accent);background:#f5faf9;transform:translateY(-1px)}
+.cart-symbol{display:grid;place-items:center;width:22px;height:22px;color:var(--accent)}
+.cart-symbol svg{display:block;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.cart-symbol circle{fill:currentColor;stroke:none}
+.cart-trigger b{background:var(--accent);color:white}
+.mobile-dock .cart-symbol{font-size:inherit;line-height:normal;color:var(--ink)}
+.mobile-dock .cart-symbol svg{width:20px;height:20px}
+@media(max-width:430px){.cart-trigger{padding:.45rem .55rem}.cart-trigger .cart-symbol{width:21px}.cart-trigger .cart-symbol svg{width:21px;height:21px}}

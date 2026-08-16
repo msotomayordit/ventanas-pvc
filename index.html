@@ -40,7 +40,7 @@
 <button type="button" id="search-clear" aria-label="Limpiar búsqueda" hidden>×</button>
 </form>
 <button class="cart-trigger" type="button" data-open-cart aria-label="Abrir mi solicitud">
-<span aria-hidden="true">▣</span>
+<span class="cart-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 7H6"/><circle cx="9.5" cy="19" r="1.25"/><circle cx="17.5" cy="19" r="1.25"/></svg></span>
 <span class="cart-copy">Mi solicitud</span>
 <b data-cart-count>0</b>
 </button>
@@ -389,7 +389,7 @@
 </div>
 </aside>
 <nav class="mobile-dock" aria-label="Accesos rápidos">
-<a href="#inicio"><span>&#8962;</span>Inicio</a><button type="button" data-open-sections><span>&#9776;</span>Secciones</button><button type="button" data-focus-search><span>&#8981;</span>Buscar</button><a href="#configurador"><span>&#9671;</span>Armar</a><button type="button" data-open-cart><span>&#9635;</span>Solicitud<b data-cart-count>0</b></button>
+<a href="#inicio"><span>&#8962;</span>Inicio</a><button type="button" data-open-sections><span>&#9776;</span>Secciones</button><button type="button" data-focus-search><span>&#8981;</span>Buscar</button><a href="#configurador"><span>&#9671;</span>Armar</a><button type="button" data-open-cart><span class="cart-symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 7H6"/><circle cx="9.5" cy="19" r="1.25"/><circle cx="17.5" cy="19" r="1.25"/></svg></span>Solicitud<b data-cart-count>0</b></button>
 </nav>
 <div class="toast" id="toast" role="status" aria-live="polite">
 </div>
