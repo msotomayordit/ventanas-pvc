@@ -11,6 +11,10 @@
   const categoryLabels = { ventanas: "Ventanas", perfiles: "Perfiles PVC", manillas: "Manillas", cremonas: "Cremonas", refuerzos: "Refuerzos", accesorios: "Accesorios" };
   const availabilityLabels = { confirmado: "Stock confirmado", consultar: "Disponible para consultar", fabricacion: "Fabricación" };
   const colorLabels = { blanco: "Blanco", nogal: "Nogal", roble: "Roble dorado", antracita: "Antracita", negro: "Negro", cafe: "Café" };
+  function optimizedImage(path) {
+    const match = String(path).match(/img\/(stock|accesorios)\/(\d+)\.jpg$/i); if (!match) return path;
+    return `img/catalog/${match[1] === "stock" ? "stock" : "accessory"}-${match[2]}.webp`;
+  }
 
   function accessoryCategory(item) {
     const category = clean(item.categoria);
@@ -37,16 +41,17 @@
     return "Unidad";
   }
   function normalizeWindowProduct(item) {
-    return { id: `window-${item.id}`, group: "VENTANAS", category: "ventanas", categoryLabel: "Ventanas", type: slugType(item.modelo), name: item.modelo, detail: "Ventana PVC termopanel lista para entrega", price: Number(item.precio), image: item.imagen, width: Math.round(Number(item.ancho) * 100), height: Math.round(Number(item.alto) * 100), colors: ["blanco"], availability: "confirmado", unit: "Unidad", variants: [] };
+    return { id: `window-${item.id}`, group: "VENTANAS", category: "ventanas", categoryLabel: "Ventanas", type: slugType(item.modelo), name: item.modelo, detail: "Ventana PVC termopanel lista para entrega", price: Number(item.precio), image: optimizedImage(item.imagen), width: Math.round(Number(item.ancho) * 100), height: Math.round(Number(item.alto) * 100), colors: ["blanco"], availability: "confirmado", unit: "Unidad", variants: [] };
   }
   function normalizeAccessoryProduct(item) {
     const category = accessoryCategory(item);
     const variants = Object.entries(item.precios || {}).map(([key, price]) => ({ id: key, label: variantLabel(key), price: Number(price), colors: variantColors(key) }));
     const colors = [...new Set(variants.flatMap((variant) => variant.colors))];
-    return { id: `accessory-${item.id}`, group: category === "perfiles" ? "PERFILES" : "ACCESORIOS", category, categoryLabel: categoryLabels[category], type: slugType(`${item.categoria} ${item.nombre}`), name: item.nombre, detail: item.detalle, price: variants.length ? Math.min(...variants.map((variant) => variant.price)) : Number(item.precio), image: item.imagen, width: null, height: null, colors, availability: "consultar", unit: inferUnit(item, category), variants };
+    return { id: `accessory-${item.id}`, group: category === "perfiles" ? "PERFILES" : "ACCESORIOS", category, categoryLabel: categoryLabels[category], type: slugType(`${item.categoria} ${item.nombre}`), name: item.nombre, detail: item.detalle, price: variants.length ? Math.min(...variants.map((variant) => variant.price)) : Number(item.precio), image: optimizedImage(item.imagen), width: null, height: null, colors, availability: "consultar", unit: inferUnit(item, category), variants };
   }
   const products = [...(window.STOCK_VENTANAS || []).map(normalizeWindowProduct), ...(window.STOCK_ACCESORIOS || []).map(normalizeAccessoryProduct)];
-  const state = { query: "", categories: new Set(), types: new Set(), colors: new Set(), availability: new Set(), maxPrice: 400000, widthMin: 0, heightMin: 0, sort: "relevance", cart: loadCart(), config: { type: "corredera", color: "blanco", width: 120, height: 120 }, detailProduct: null };
+  const pageSize = () => window.innerWidth <= 760 ? 8 : 12;
+  const state = { query: "", categories: new Set(), types: new Set(), colors: new Set(), availability: new Set(), maxPrice: 400000, widthMin: 0, heightMin: 0, sort: "relevance", visibleLimit: pageSize(), cart: loadCart(), config: { type: "corredera", color: "blanco", width: 120, height: 120 }, detailProduct: null };
   let lastPanelTrigger = null;
 
   function loadCart() {
@@ -68,11 +73,14 @@
     const pricePrefix = product.variants.length > 1 ? "Desde " : "";
     return `<article class="product-card"><button class="product-image" type="button" data-view="${escapeHtml(product.id)}" aria-label="Ver detalle de ${escapeHtml(product.name)}"><img src="${escapeHtml(product.image)}" width="420" height="336" loading="lazy" alt="${escapeHtml(product.name)}"><span class="stock-tag is-${escapeHtml(product.availability)}">${escapeHtml(availabilityLabels[product.availability])}</span></button><div class="product-body"><span class="product-category">${escapeHtml(product.categoryLabel)}</span><button class="product-title" type="button" data-view="${escapeHtml(product.id)}"><h3>${escapeHtml(product.name)}</h3></button><p class="product-detail">${escapeHtml(product.detail)}</p><div class="product-specs">${measure ? `<span>${escapeHtml(measure)}</span>` : ""}<span>${escapeHtml(product.unit)}</span>${product.variants.length ? `<span>${product.variants.length} ${product.variants.length === 1 ? "variante" : "variantes"}</span>` : ""}</div><div class="product-buy"><strong class="product-price">${pricePrefix}${money(product.price)}</strong><button class="add-button" type="button" data-view="${escapeHtml(product.id)}" aria-label="Ver opciones de ${escapeHtml(product.name)}">+</button></div></div></article>`;
   }
-  function renderProducts() {
-    const shown = filteredProducts();
+  function renderProducts(resetLimit = false) {
+    if (resetLimit) state.visibleLimit = pageSize();
+    const results = filteredProducts(), shown = results.slice(0, state.visibleLimit);
     $("#product-grid").innerHTML = shown.map(productCard).join("");
-    $("#results-count").textContent = `${shown.length} ${shown.length === 1 ? "producto" : "productos"}`;
-    $("#empty-state").hidden = shown.length !== 0;
+    $("#results-count").textContent = `${results.length} ${results.length === 1 ? "producto" : "productos"} · mostrando ${shown.length}`;
+    $("#empty-state").hidden = results.length !== 0;
+    $("#load-more-wrap").hidden = shown.length >= results.length;
+    $("#load-more-count").textContent = shown.length < results.length ? `(${results.length - shown.length} restantes)` : "";
     renderActiveFilters();
   }
   function countValues(key) {
@@ -97,11 +105,11 @@
     state.categories.clear(); if (category !== "todos") state.categories.add(category);
     $$('[name="category"]').forEach((input) => { input.checked = state.categories.has(input.value); });
     $$(".nav-chip[data-category]").forEach((element) => element.classList.toggle("is-active", element.dataset.category === category));
-    renderProducts(); $("#catalogo").scrollIntoView({ behavior: "smooth" }); closePanels();
+    renderProducts(true); $("#catalogo").scrollIntoView({ behavior: "smooth" }); closePanels();
   }
   function resetFilters() {
     state.query = ""; state.categories.clear(); state.types.clear(); state.colors.clear(); state.availability.clear(); state.maxPrice = 400000; state.widthMin = 0; state.heightMin = 0; state.sort = "relevance";
-    $("#search-input").value = ""; $("#search-clear").hidden = true; $$("#filters input[type=checkbox]").forEach((input) => { input.checked = false; }); $("#price-range").value = 400000; $("#price-output").textContent = money(400000); $("#width-min").value = ""; $("#height-min").value = ""; $("#sort-select").value = "relevance"; $$(".nav-chip[data-category]").forEach((element) => element.classList.toggle("is-active", element.dataset.category === "todos")); renderProducts();
+    $("#search-input").value = ""; $("#search-clear").hidden = true; $$("#filters input[type=checkbox]").forEach((input) => { input.checked = false; }); $("#price-range").value = 400000; $("#price-output").textContent = money(400000); $("#width-min").value = ""; $("#height-min").value = ""; $("#sort-select").value = "relevance"; $$(".nav-chip[data-category]").forEach((element) => element.classList.toggle("is-active", element.dataset.category === "todos")); renderProducts(true);
   }
 
   function cartCount() { return state.cart.reduce((sum, item) => sum + item.qty, 0); }
@@ -160,12 +168,12 @@
   function updateConfig() { const quote = currentQuote(); $("#config-name").textContent = quote.name; $("#config-color").textContent = quote.color; $("#config-measure").textContent = `${state.config.width} × ${state.config.height} cm`; $("#config-area").textContent = `${quote.area.toLocaleString("es-CL", { maximumFractionDigits: 2 })} m²`; $("#config-price").textContent = money(quote.price); const colors = { blanco: "#f3f3ed", nogal: "#684130", "roble-dorado": "#a8793c", antracita: "#343c40", negro: "#121619" }; $("#window-visual").style.borderColor = colors[state.config.color]; $$("#window-visual span").forEach((element) => { element.style.borderColor = colors[state.config.color]; }); }
 
   function bindEvents() {
-    $("#search-form").addEventListener("submit", (event) => event.preventDefault()); $("#search-input").addEventListener("input", (event) => { state.query = event.target.value; $("#search-clear").hidden = !state.query; renderProducts(); }); $("#search-clear").addEventListener("click", () => { state.query = ""; $("#search-input").value = ""; $("#search-clear").hidden = true; renderProducts(); });
+    $("#search-form").addEventListener("submit", (event) => event.preventDefault()); $("#search-input").addEventListener("input", (event) => { state.query = event.target.value; $("#search-clear").hidden = !state.query; renderProducts(true); }); $("#search-clear").addEventListener("click", () => { state.query = ""; $("#search-input").value = ""; $("#search-clear").hidden = true; renderProducts(true); });
     document.addEventListener("click", (event) => { const category = event.target.closest("[data-category]"); if (category && !category.closest("#category-filters")) { event.preventDefault(); setCategory(category.dataset.category); } const view = event.target.closest("[data-view]"); if (view) { const product = products.find((item) => item.id === view.dataset.view); if (product) { renderProductDetail(product); openPanel("product", view); } } if (event.target.closest("[data-open-cart]")) openPanel("cart", event.target.closest("[data-open-cart]")); if (event.target.closest("[data-open-sections]")) openPanel("sections", event.target.closest("[data-open-sections]")); if (event.target.closest("[data-focus-search]")) { closePanels(false); $("#search-input").focus(); window.scrollTo({ top: 0, behavior: "smooth" }); } if (event.target.closest("[data-section-link]")) closePanels(false); if (event.target.closest("[data-clear-all]")) resetFilters(); });
-    $("#filters").addEventListener("change", (event) => { if (!event.target.matches('input[type="checkbox"]')) return; const map = { category: state.categories, type: state.types, color: state.colors, availability: state.availability }; const set = map[event.target.name]; event.target.checked ? set.add(event.target.value) : set.delete(event.target.value); renderProducts(); });
-    $("#price-range").addEventListener("input", (event) => { state.maxPrice = Number(event.target.value); $("#price-output").textContent = money(state.maxPrice); renderProducts(); }); [["#width-min", "widthMin"], ["#height-min", "heightMin"]].forEach(([id, key]) => $(id).addEventListener("input", (event) => { state[key] = Number(event.target.value) || 0; renderProducts(); })); $("#sort-select").addEventListener("change", (event) => { state.sort = event.target.value; renderProducts(); });
-    $("#active-filters").addEventListener("click", (event) => { const button = event.target.closest("[data-remove-filter]"); if (!button) return; if (button.dataset.removeFilter === "query") { state.query = ""; $("#search-input").value = ""; } else { const map = { category: state.categories, type: state.types, color: state.colors, availability: state.availability }; map[button.dataset.removeFilter].delete(button.dataset.value); const input = $(`[name="${button.dataset.removeFilter}"][value="${button.dataset.value}"]`); if (input) input.checked = false; } renderProducts(); });
-    $("#clear-filters").addEventListener("click", resetFilters); $("#open-filters").addEventListener("click", (event) => openPanel("filters", event.currentTarget)); ["#close-filters", "#close-cart", "#close-sections", "#close-product"].forEach((id) => $(id).addEventListener("click", () => closePanels())); $("#overlay").addEventListener("click", () => closePanels()); document.addEventListener("keydown", (event) => { if (event.key === "Escape") closePanels(); trapFocus(event); });
+    $("#filters").addEventListener("change", (event) => { if (!event.target.matches('input[type="checkbox"]')) return; const map = { category: state.categories, type: state.types, color: state.colors, availability: state.availability }; const set = map[event.target.name]; event.target.checked ? set.add(event.target.value) : set.delete(event.target.value); renderProducts(true); });
+    $("#price-range").addEventListener("input", (event) => { state.maxPrice = Number(event.target.value); $("#price-output").textContent = money(state.maxPrice); renderProducts(true); }); [["#width-min", "widthMin"], ["#height-min", "heightMin"]].forEach(([id, key]) => $(id).addEventListener("input", (event) => { state[key] = Number(event.target.value) || 0; renderProducts(true); })); $("#sort-select").addEventListener("change", (event) => { state.sort = event.target.value; renderProducts(true); });
+    $("#active-filters").addEventListener("click", (event) => { const button = event.target.closest("[data-remove-filter]"); if (!button) return; if (button.dataset.removeFilter === "query") { state.query = ""; $("#search-input").value = ""; } else { const map = { category: state.categories, type: state.types, color: state.colors, availability: state.availability }; map[button.dataset.removeFilter].delete(button.dataset.value); const input = $(`[name="${button.dataset.removeFilter}"][value="${button.dataset.value}"]`); if (input) input.checked = false; } renderProducts(true); });
+    $("#clear-filters").addEventListener("click", resetFilters); $("#load-more").addEventListener("click", () => { state.visibleLimit += pageSize(); renderProducts(); }); $("#open-filters").addEventListener("click", (event) => openPanel("filters", event.currentTarget)); ["#close-filters", "#close-cart", "#close-sections", "#close-product"].forEach((id) => $(id).addEventListener("click", () => closePanels())); $("#overlay").addEventListener("click", () => closePanels()); document.addEventListener("keydown", (event) => { if (event.key === "Escape") closePanels(); trapFocus(event); });
     $("#product-detail-panel").addEventListener("change", (event) => { if (event.target.id === "detail-variant") $("#detail-price").textContent = money(event.target.selectedOptions[0].dataset.price); }); $("#product-detail-panel").addEventListener("click", (event) => { if (event.target.id === "detail-add") addDetailToCart(); });
     $("#cart-items").addEventListener("click", (event) => { const qty = event.target.closest("[data-qty]"), remove = event.target.closest("[data-remove-cart]"); if (qty) { const item = state.cart.find((entry) => entry.id === qty.dataset.cartId); if (item) { item.qty += Number(qty.dataset.qty); if (item.qty < 1) state.cart = state.cart.filter((entry) => entry.id !== item.id); } } if (remove) state.cart = state.cart.filter((entry) => entry.id !== remove.dataset.removeCart); if (qty || remove) { saveCart(); renderCart(); } });
     $("#config-form").addEventListener("input", (event) => { if (event.target.name === "config-type") state.config.type = event.target.value; if (event.target.name === "config-color") state.config.color = event.target.value; if (event.target.id === "config-width") state.config.width = Math.max(30, Math.min(500, Number(event.target.value) || 30)); if (event.target.id === "config-height") state.config.height = Math.max(30, Math.min(500, Number(event.target.value) || 30)); updateConfig(); });
