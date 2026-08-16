@@ -58,4 +58,5 @@
 .payment-promo-track{display:flex;align-items:center;justify-content:center;gap:.65rem;white-space:nowrap}
 .payment-promo p{margin:0;color:#243643;font-size:.84rem}.payment-promo strong{font-family:var(--display);color:#007eb5;letter-spacing:-.01em}.payment-promo img{width:108px;height:27px;object-fit:contain}
 .payment-kicker{padding-right:.75rem;border-right:1px solid #9ccbdc;color:#51717f;font-size:.65rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.payment-promo small{color:#6b818b;font-size:.64rem}
-@media(max-width:760px){.payment-promo{height:42px}.payment-promo-track{justify-content:flex-start;gap:.5rem;overflow:hidden}.payment-kicker,.payment-promo small{display:none}.payment-promo p{font-size:.74rem}.payment-promo img{width:92px;height:auto}}
+@media(max-width:760px){.payment-promo{height:42px}.payment-promo-track{width:100%;justify-content:center;gap:.5rem;overflow:hidden;text-align:center}.payment-kicker,.payment-promo small{display:none}.payment-promo p{font-size:.74rem}.payment-promo img{width:92px;height:auto;flex:none}}
+@media(max-width:370px){.payment-promo-track{gap:.35rem}.payment-promo p{font-size:.69rem}.payment-promo img{width:84px}}
