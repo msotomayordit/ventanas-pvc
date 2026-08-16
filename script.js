@@ -117,6 +117,40 @@ function buildCartMessage(cartName) {
   return [titulo, ...lineas, `Total: ${formatPrecio(cartTotal(cartName))}`].join("\n");
 }
 
+function unifiedCartCount() {
+  return Object.keys(carts).reduce((sum, name) => sum + cartCount(name), 0);
+}
+
+function unifiedCartTotal() {
+  return Object.keys(carts).reduce((sum, name) => sum + cartTotal(name), 0);
+}
+
+function buildUnifiedCartMessage() {
+  const labels = { stock: "VENTANAS EN STOCK", calc: "VENTANAS PERSONALIZADAS", acc: "ACCESORIOS Y PERFILES" };
+  const lines = ["Hola, quiero solicitar estos productos en FRAME PVC DEPOT:", ""];
+  ["stock", "calc", "acc"].forEach((name) => {
+    if (!carts[name].length) return;
+    lines.push(labels[name]);
+    carts[name].forEach((item) => lines.push(`- ${item.qty} × ${item.nombre}${item.detalle ? ` (${item.detalle})` : ""}: ${formatPrecio(item.precio * item.qty)}`));
+    lines.push("");
+  });
+  lines.push(`TOTAL REFERENCIAL: ${formatPrecio(unifiedCartTotal())}`, "Quiero confirmar stock, fabricación, despacho y valor final.");
+  return lines.join("\n");
+}
+
+function renderUnifiedCart() {
+  const body = document.getElementById("unified-cart-body");
+  if (!body) return;
+  const labels = { stock: ["Ventanas en stock", "Disponibles para entrega"], calc: ["Ventanas personalizadas", "Calculadas según tus medidas"], acc: ["Accesorios y perfiles", "Componentes para fabricación e instalación"] };
+  const count = unifiedCartCount();
+  document.querySelectorAll("[data-unified-count]").forEach((element) => { element.textContent = count; });
+  document.getElementById("unified-cart-total").textContent = formatPrecio(unifiedCartTotal());
+  if (!count) body.innerHTML = '<div class="unified-cart-empty"><span aria-hidden="true">▤</span><h3>Tu carrito está vacío</h3><p>Agrega una ventana disponible, calcula una personalizada o incorpora sus accesorios.</p><button type="button" data-close-unified-cart>Volver a ver productos</button></div>';
+  else body.innerHTML = ["stock", "calc", "acc"].filter((name) => carts[name].length).map((name) => `<section class="unified-cart-group"><header><div><h3>${labels[name][0]}</h3><p>${labels[name][1]}</p></div><strong>${cartCount(name)} ${cartCount(name) === 1 ? "ítem" : "ítems"}</strong></header><ul>${carts[name].map((item) => `<li><div><b>${item.nombre}</b><span>${item.detalle || ""}</span><small>${formatPrecio(item.precio)} c/u</small></div><div class="unified-item-actions"><button type="button" data-cart-action="dec" data-cart="${name}" data-id="${item.id}" aria-label="Quitar uno">−</button><strong>${item.qty}</strong><button type="button" data-cart-action="inc" data-cart="${name}" data-id="${item.id}" aria-label="Agregar uno">+</button><button type="button" class="unified-remove" data-cart-action="remove" data-cart="${name}" data-id="${item.id}" aria-label="Eliminar ${item.nombre}">×</button></div><strong class="unified-line-total">${formatPrecio(item.precio * item.qty)}</strong></li>`).join("")}</ul></section>`).join("");
+  const wa = document.getElementById("unified-cart-wa");
+  wa.href = count ? waUrl(buildUnifiedCartMessage()) : "#"; wa.classList.toggle("is-disabled", !count); wa.setAttribute("aria-disabled", String(!count));
+}
+
 function renderCart(cartName) {
   const root = document.getElementById(cartRootId(cartName));
   if (!root) return;
@@ -174,10 +208,20 @@ function renderCart(cartName) {
       waLink.classList.add("is-disabled");
     }
   }
+  renderUnifiedCart();
 }
 
 function initCarts() {
+  const drawer = document.getElementById("unified-cart");
+  const overlay = document.getElementById("cart-overlay");
+  const closeButton = document.getElementById("unified-cart-close");
+  let cartTrigger = null;
+  const closeUnifiedCart = () => { drawer.classList.remove("is-open"); drawer.setAttribute("aria-hidden", "true"); overlay.hidden = true; document.body.classList.remove("cart-open"); if (cartTrigger?.isConnected) cartTrigger.focus(); };
+  const openUnifiedCart = (trigger) => { closeMobileMenu(); cartTrigger = trigger; renderUnifiedCart(); drawer.classList.add("is-open"); drawer.setAttribute("aria-hidden", "false"); overlay.hidden = false; document.body.classList.add("cart-open"); setTimeout(() => closeButton.focus(), 60); };
   document.addEventListener("click", (event) => {
+    const openCart = event.target.closest("[data-open-unified-cart]");
+    if (openCart) { openUnifiedCart(openCart); return; }
+    if (event.target.closest("[data-close-unified-cart]")) { closeUnifiedCart(); return; }
     const addBtn = event.target.closest("[data-add-cart]");
     if (addBtn) {
       event.preventDefault();
@@ -203,6 +247,10 @@ function initCarts() {
     if (action === "dec") changeCartQty(cartName, id, -1);
     if (action === "remove") removeFromCart(cartName, id);
   });
+
+  closeButton.addEventListener("click", closeUnifiedCart);
+  overlay.addEventListener("click", closeUnifiedCart);
+  document.addEventListener("keydown", (event) => { if (event.key === "Escape" && drawer.classList.contains("is-open")) closeUnifiedCart(); });
 
   renderCart("stock");
   renderCart("acc");
