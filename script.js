@@ -410,7 +410,10 @@ function initHeroBestsellersCarousel(root) {
     if (!allCards.length) return;
     const maximum = Math.max(0, allCards.length - visibleCount());
     const target = index > maximum ? 0 : index < 0 ? maximum : index;
-    allCards[target].scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "nearest", inline: "start" });
+    root.scrollTo({
+      left: allCards[target].offsetLeft - root.offsetLeft,
+      behavior: reduceMotion ? "auto" : "smooth",
+    });
     window.setTimeout(updateStatus, reduceMotion ? 0 : 380);
   };
   const stop = () => window.clearInterval(timer);
