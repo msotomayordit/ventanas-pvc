@@ -361,6 +361,26 @@ function renderStock() {
     .join("");
 }
 
+function renderHeroBestsellers() {
+  const root = document.getElementById("hero-bestsellers-list");
+  const items = window.STOCK_VENTANAS;
+  if (!root || !Array.isArray(items)) return;
+
+  root.innerHTML = items.slice(0, 5).map((item) => {
+    const medida = formatMedida(item.ancho, item.alto);
+    return `
+      <article class="hero-bestseller">
+        <img src="${item.imagen}" alt="${item.modelo}" width="180" height="180" loading="eager" />
+        <div class="hero-bestseller-info">
+          <h3>${item.modelo}</h3>
+          <p>${medida}</p>
+          <strong>${formatPrecio(item.precio)}</strong>
+          <button type="button" data-add-cart="stock" data-id="${item.id}" data-nombre="${item.modelo}" data-detalle="${medida}" data-precio="${item.precio}">Agregar</button>
+        </div>
+      </article>`;
+  }).join("");
+}
+
 function parseMedida(valor) {
   const n = Number(String(valor).replace(",", "."));
   return Number.isFinite(n) ? n : NaN;
@@ -575,6 +595,7 @@ function initAccesorios() {
 }
 
 renderStock();
+renderHeroBestsellers();
 initAccesorios();
 initCalculadora();
 initCarts();
