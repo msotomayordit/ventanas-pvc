@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Inventario técnico de ventanas PVC, perfiles y componentes FRAME PVC DEPOT." />
-  <title>Inventario técnico — FRAME PVC DEPOT</title>
+  <meta name="description" content="Tienda de ventanas PVC, perfiles y componentes FRAME PVC DEPOT." />
+  <title>Tienda — FRAME PVC DEPOT</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet" />
@@ -19,7 +19,7 @@
     </a>
     <button class="menu-toggle" id="inventory-menu-toggle" type="button" aria-expanded="false" aria-controls="inventory-nav" aria-label="Abrir menú"><span></span><span></span><span></span></button>
     <nav class="nav" id="inventory-nav" aria-label="Principal">
-      <a href="index.html">Sitio principal</a><a href="#inventario" aria-current="page">Inventario técnico</a><a href="index.html#calculadora">Calcular ventana</a><a href="index.html#contacto">Contacto</a>
+      <a href="index.html">Sitio principal</a><a href="#inventario" aria-current="page">Tienda</a><a href="index.html#calculadora">Calcular ventana</a><a href="index.html#contacto">Contacto</a>
     </nav>
     <button class="header-cart inventory-selection-trigger" type="button" data-open-selection aria-label="Abrir productos seleccionados"><svg class="cart-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 7H6"/><circle cx="9.5" cy="19" r="1.25"/><circle cx="17.5" cy="19" r="1.25"/></svg><b>Selección</b><small data-selection-count>0</small></button>
   </header>
@@ -27,12 +27,9 @@
 
   <main class="inventory" id="inventario">
     <header class="inventory-intro">
-      <div><p class="inventory-eyebrow">Consulta de productos</p><h1>Inventario técnico</h1><p>Busca, filtra y revisa ventanas, perfiles y componentes. Agrega los productos que quieras consultar.</p></div>
-      <form class="inventory-search" id="inventory-search" role="search"><label for="inventory-query">Buscar en inventario</label><div><input id="inventory-query" type="search" autocomplete="off" placeholder="Ej. ventana 120 × 90 o manilla negra" /><button type="submit">Buscar</button></div><div class="inventory-suggestions" id="inventory-suggestions" hidden></div></form>
+      <div class="inventory-heading"><h1>Productos</h1><nav class="inventory-categories" id="inventory-categories" aria-label="Categorías"><button class="is-active" type="button" data-category="todos">Todos</button><button type="button" data-category="ventanas">Ventanas</button><button type="button" data-category="perfiles">Perfiles</button><button type="button" data-category="manillas">Manillas</button><button type="button" data-category="cremonas">Cremonas</button><button type="button" data-category="refuerzos">Refuerzos</button><button type="button" data-category="accesorios">Accesorios</button></nav></div>
+      <form class="inventory-search" id="inventory-search" role="search"><label for="inventory-query">Buscar productos</label><div><input id="inventory-query" type="search" autocomplete="off" placeholder="Ej. ventana 120 × 90 o manilla negra" /><button type="submit">Buscar</button></div><div class="inventory-suggestions" id="inventory-suggestions" hidden></div></form>
     </header>
-    <nav class="inventory-categories" id="inventory-categories" aria-label="Categorías">
-      <button class="is-active" type="button" data-category="todos">Todos</button><button type="button" data-category="ventanas">Ventanas</button><button type="button" data-category="perfiles">Perfiles</button><button type="button" data-category="manillas">Manillas</button><button type="button" data-category="cremonas">Cremonas</button><button type="button" data-category="refuerzos">Refuerzos</button><button type="button" data-category="accesorios">Accesorios</button>
-    </nav>
     <div class="inventory-toolbar"><button class="inventory-filter-trigger" id="inventory-filter-trigger" type="button" aria-expanded="false" aria-controls="inventory-filters">Filtros <span id="inventory-filter-count">0</span></button><p id="inventory-results" aria-live="polite"></p><label>Ordenar por <select id="inventory-sort"><option value="relevance">Relevancia</option><option value="price-asc">Menor precio</option><option value="price-desc">Mayor precio</option><option value="name">Nombre</option><option value="measure">Medida</option></select></label></div>
     <div class="inventory-layout">
       <aside class="inventory-filters" id="inventory-filters" aria-label="Filtros de productos">
@@ -51,7 +48,7 @@
   <aside class="inventory-drawer selection-drawer" id="selection-drawer" aria-hidden="true" aria-labelledby="selection-title"><header><div><p>Productos por consultar</p><h2 id="selection-title">Mi selección</h2></div><button type="button" data-close-panel aria-label="Cerrar selección">×</button></header><div class="selection-items" id="selection-items"></div><footer><div><span>Total referencial</span><strong id="selection-total">$0</strong></div><p>Confirmaremos disponibilidad, variante, despacho y valor final.</p><a id="selection-whatsapp" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true">Consultar selección por WhatsApp</a></footer></aside>
   <div class="compare-bar" id="compare-bar" hidden><div><strong>Revisar productos</strong><span id="compare-status">0 de 3 seleccionados</span></div><button id="compare-open" type="button" disabled>Comparar</button><button id="compare-clear" type="button" aria-label="Vaciar comparación">×</button></div>
   <dialog class="inventory-compare" id="inventory-compare" aria-labelledby="inventory-compare-title"><header><h2 id="inventory-compare-title">Comparación técnica</h2><button id="compare-close" type="button" aria-label="Cerrar comparación">×</button></header><div id="compare-content"></div></dialog>
-  <nav class="inventory-mobile-nav" aria-label="Accesos rápidos"><a href="index.html"><span>⌂</span>Sitio</a><a href="#inventario"><span>▦</span>Inventario</a><button type="button" data-focus-search><span>⌕</span>Buscar</button><button type="button" data-open-filters><span>◇</span>Filtros</button><button type="button" data-open-selection><span>□</span>Selección<small data-selection-count>0</small></button></nav>
+  <nav class="inventory-mobile-nav" aria-label="Accesos rápidos"><a href="index.html"><span>⌂</span>Sitio</a><a href="#inventario"><span>▦</span>Productos</a><button type="button" data-focus-search><span>⌕</span>Buscar</button><button type="button" data-open-filters><span>◇</span>Filtros</button><button type="button" data-open-selection><span>□</span>Selección<small data-selection-count>0</small></button></nav>
   <div class="inventory-toast" id="inventory-toast" role="status" aria-live="polite"></div>
   <script src="stock.js"></script><script src="accesorios.js"></script><script src="tienda.js"></script>
 </body>
