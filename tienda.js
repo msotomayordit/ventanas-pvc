@@ -32,11 +32,29 @@
   function measure(product) { return product.width ? `${product.width} × ${product.height} cm` : ""; }
   function variants(product) { return product.variants.length ? product.variants : [{ id: "base", label: product.colors.length ? product.colors.map((color) => colorLabels[color]).join(" / ") : "Estándar", price: product.price }]; }
 
-  function productCard(product) {
+  function productCard(product, index = 0) {
     const selected = state.compare.includes(product.id), productMeasure = measure(product);
-    return `<article class="inventory-card"><button class="inventory-photo" type="button" data-review="${safe(product.id)}" aria-label="Revisar ${safe(product.name)}"><img src="${safe(product.image)}" width="420" height="336" loading="lazy" alt="${safe(product.name)}"><span>${safe(availabilityLabels[product.availability])}</span></button><div class="inventory-card-body"><small class="inventory-category">${safe(categoryLabels[product.category])}</small><h2>${safe(product.name)}</h2><p class="inventory-description">${safe(product.detail)}</p><div class="inventory-specs">${productMeasure ? `<span>${safe(productMeasure)} · ${safe(product.unit)}</span>` : `<span>${safe(product.unit)}${product.variants.length ? ` · ${product.variants.length} variantes` : ""}</span>`}</div><div class="inventory-price"><strong>${product.variants.length > 1 ? "Desde " : ""}${money(product.price)}</strong><small>12 cuotas ref. de ${money(Math.ceil(product.price / 12))}</small></div><div class="inventory-card-actions"><button type="button" data-compare="${safe(product.id)}" aria-pressed="${selected}">${selected ? "✓ Revisando" : "+ Comparar"}</button><button class="review-button" type="button" data-review="${safe(product.id)}">Revisar producto</button></div></div></article>`;
+    return `<article class="inventory-card" style="--card-index:${index}"><button class="inventory-photo" type="button" data-review="${safe(product.id)}" aria-label="Revisar ${safe(product.name)}"><img src="${safe(product.image)}" width="420" height="336" loading="lazy" alt="${safe(product.name)}"><span>${safe(availabilityLabels[product.availability])}</span></button><div class="inventory-card-body"><small class="inventory-category">${safe(categoryLabels[product.category])}</small><h2>${safe(product.name)}</h2><p class="inventory-description">${safe(product.detail)}</p><div class="inventory-specs">${productMeasure ? `<span>${safe(productMeasure)} · ${safe(product.unit)}</span>` : `<span>${safe(product.unit)}${product.variants.length ? ` · ${product.variants.length} variantes` : ""}</span>`}</div><div class="inventory-price"><strong>${product.variants.length > 1 ? "Desde " : ""}${money(product.price)}</strong><small>12 cuotas ref. de ${money(Math.ceil(product.price / 12))}</small></div><div class="inventory-card-actions"><button type="button" data-compare="${safe(product.id)}" aria-pressed="${selected}">${selected ? "✓ Revisando" : "+ Comparar"}</button><button class="review-button" type="button" data-review="${safe(product.id)}">Revisar producto</button></div></div></article>`;
   }
-  function renderProducts(reset = false) { if (reset) state.limit = innerWidth < 720 ? 8 : 12; const results = filteredProducts(), shown = results.slice(0, state.limit); $("#inventory-grid").innerHTML = shown.map(productCard).join(""); $("#inventory-results").textContent = `${results.length} productos · mostrando ${shown.length}`; $("#inventory-empty").hidden = results.length !== 0; $("#inventory-more").hidden = shown.length >= results.length; renderActive(); }
+  let productTransition;
+  function renderProducts(reset = false) {
+    if (reset) state.limit = innerWidth < 720 ? 8 : 12;
+    const update = () => {
+      const results = filteredProducts(), shown = results.slice(0, state.limit);
+      $("#inventory-grid").innerHTML = shown.map(productCard).join("");
+      $("#inventory-results").textContent = `${results.length} productos · mostrando ${shown.length}`;
+      $("#inventory-empty").hidden = results.length !== 0;
+      $("#inventory-more").hidden = shown.length >= results.length;
+      renderActive();
+    };
+    const gridHasProducts = Boolean($("#inventory-grid").children.length);
+    const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!gridHasProducts || reduceMotion || typeof document.startViewTransition !== "function") { update(); return; }
+    productTransition?.skipTransition();
+    const transition = document.startViewTransition(update);
+    productTransition = transition;
+    transition.finished.finally(() => { if (productTransition === transition) productTransition = null; });
+  }
   function renderActive() { const active = []; if (state.query) active.push(`“${state.query}”`); if (state.category !== "todos") active.push(categoryLabels[state.category]); active.push(...state.types, ...[...state.colors].map((color) => colorLabels[color]), ...[...state.availability].map((item) => availabilityLabels[item])); $("#inventory-active").innerHTML = active.map((label) => `<span>${safe(label)}</span>`).join(""); $("#inventory-filter-count").textContent = active.length; }
   function filterMarkup(name, values, labels) { return values.map((value) => `<label><input type="checkbox" name="${name}" value="${safe(value)}"> ${safe(labels[value] || value)}</label>`).join(""); }
   function renderFilters() { $("#inventory-types").innerHTML = filterMarkup("type", ["corredera", "proyectante", "fija", "puerta"], { corredera: "Corredera", proyectante: "Proyectante", fija: "Fija", puerta: "Puerta" }); $("#inventory-colors").innerHTML = filterMarkup("color", Object.keys(colorLabels), colorLabels); $("#inventory-availability").innerHTML = filterMarkup("availability", Object.keys(availabilityLabels), availabilityLabels); }
