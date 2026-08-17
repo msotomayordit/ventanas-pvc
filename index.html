@@ -21,15 +21,18 @@
     </a>
     <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="Abrir menú"><span></span><span></span><span></span></button>
     <nav class="nav" id="main-nav" aria-label="Principal">
-      <a href="tienda.html">Tienda técnica</a>
-      <a href="#stock">Ventanas en stock</a>
-      <a href="#calculadora">Calculadora de ventanas</a>
+      <a href="tienda.html">Tienda</a>
+      <details class="nav-group">
+        <summary>Fábrica</summary>
+        <div class="nav-submenu">
+          <a href="#vidrios"><b>Vidrios termopanel</b><small>Fabricados a medida, listos para usar</small></a>
+          <a href="#stock"><b>Ventanas listas</b><small>Compra, recibe e instala</small></a>
+        </div>
+      </details>
       <a href="#instalacion">Instálalo tú mismo</a>
-      <a href="#accesorios">Accesorios y perfiles para fabricantes</a>
-      <a href="#vidrios">Fabricación de vidrios termopanel</a>
       <a href="#contacto">Contacto</a>
     </nav>
-    <button class="header-cart" type="button" data-open-unified-cart aria-label="Abrir carrito"><svg class="cart-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 7H6"/><circle cx="9.5" cy="19" r="1.25"/><circle cx="17.5" cy="19" r="1.25"/></svg><b>Carrito</b><small data-unified-count>0</small></button>
+    <button class="header-cart" type="button" data-open-unified-cart aria-label="Abrir carrito: 0 productos, total $0"><svg class="cart-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 7H6"/><circle cx="9.5" cy="19" r="1.25"/><circle cx="17.5" cy="19" r="1.25"/></svg><small data-unified-count>0</small><span class="cart-separator" aria-hidden="true">·</span><strong data-unified-header-total>$0</strong></button>
   </header>
   <div class="nav-overlay" id="nav-overlay" hidden></div>
 

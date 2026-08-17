@@ -24,7 +24,8 @@ if (menuToggle && mainNav && navOverlay) {
     document.body.classList.toggle("menu-open", opening);
   });
   navOverlay.addEventListener("click", closeMobileMenu);
-  mainNav.addEventListener("click", (event) => { if (event.target.closest("a")) closeMobileMenu(); });
+  mainNav.addEventListener("click", (event) => { if (event.target.closest("a")) { mainNav.querySelectorAll(".nav-group[open]").forEach((group) => { group.open = false; }); closeMobileMenu(); } });
+  document.addEventListener("click", (event) => { if (!event.target.closest(".nav-group")) mainNav.querySelectorAll(".nav-group[open]").forEach((group) => { group.open = false; }); });
   document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeMobileMenu(); });
   window.addEventListener("resize", () => { if (window.innerWidth >= 720) closeMobileMenu(); });
 }
@@ -197,8 +198,11 @@ function renderUnifiedCart() {
   if (!body) return;
   const labels = { stock: ["Ventanas en stock", "Disponibles para entrega"], calc: ["Ventanas personalizadas", "Calculadas según tus medidas"], acc: ["Accesorios y perfiles", "Componentes para fabricación e instalación"] };
   const count = unifiedCartCount();
+  const total = unifiedCartTotal();
   document.querySelectorAll("[data-unified-count]").forEach((element) => { element.textContent = count; });
-  document.getElementById("unified-cart-total").textContent = formatPrecio(unifiedCartTotal());
+  document.querySelectorAll("[data-unified-header-total]").forEach((element) => { element.textContent = formatPrecio(total); });
+  document.querySelectorAll("[data-open-unified-cart]").forEach((element) => { element.setAttribute("aria-label", `Abrir carrito: ${count} ${count === 1 ? "producto" : "productos"}, total ${formatPrecio(total)}`); });
+  document.getElementById("unified-cart-total").textContent = formatPrecio(total);
   if (!count) body.innerHTML = '<div class="unified-cart-empty"><svg class="cart-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 7H6"/><circle cx="9.5" cy="19" r="1.25"/><circle cx="17.5" cy="19" r="1.25"/></svg><h3>Tu carrito está vacío</h3><p>Agrega una ventana disponible, calcula una personalizada o incorpora sus accesorios.</p><button type="button" data-close-unified-cart>Volver a ver productos</button></div>';
   else body.innerHTML = ["stock", "calc", "acc"].filter((name) => carts[name].length).map((name) => `<section class="unified-cart-group"><header><div><h3>${labels[name][0]}</h3><p>${labels[name][1]}</p></div><strong>${cartCount(name)} ${cartCount(name) === 1 ? "ítem" : "ítems"}</strong></header><ul>${carts[name].map((item) => `<li><div><b>${item.nombre}</b><span>${item.detalle || ""}</span><small>${formatPrecio(item.precio)} c/u</small></div><div class="unified-item-actions"><button type="button" data-cart-action="dec" data-cart="${name}" data-id="${item.id}" aria-label="Quitar uno">−</button><strong>${item.qty}</strong><button type="button" data-cart-action="inc" data-cart="${name}" data-id="${item.id}" aria-label="Agregar uno">+</button><button type="button" class="unified-remove" data-cart-action="remove" data-cart="${name}" data-id="${item.id}" aria-label="Eliminar ${item.nombre}">×</button></div><strong class="unified-line-total">${formatPrecio(item.precio * item.qty)}</strong></li>`).join("")}</ul></section>`).join("");
   const wa = document.getElementById("unified-cart-wa");

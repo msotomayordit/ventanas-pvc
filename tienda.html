@@ -19,9 +19,17 @@
     </a>
     <button class="menu-toggle" id="inventory-menu-toggle" type="button" aria-expanded="false" aria-controls="inventory-nav" aria-label="Abrir menú"><span></span><span></span><span></span></button>
     <nav class="nav" id="inventory-nav" aria-label="Principal">
-      <a href="index.html">Sitio principal</a><a href="#inventario" aria-current="page">Tienda</a><a href="index.html#calculadora">Calcular ventana</a><a href="index.html#contacto">Contacto</a>
+      <a href="#inventario" aria-current="page">Tienda</a>
+      <details class="nav-group">
+        <summary>Fábrica</summary>
+        <div class="nav-submenu">
+          <a href="index.html#vidrios"><b>Vidrios termopanel</b><small>Fabricados a medida, listos para usar</small></a>
+          <a href="index.html#stock"><b>Ventanas listas</b><small>Compra, recibe e instala</small></a>
+        </div>
+      </details>
+      <a href="index.html#instalacion">Instálalo tú mismo</a><a href="index.html#contacto">Contacto</a>
     </nav>
-    <button class="header-cart inventory-selection-trigger" type="button" data-open-selection aria-label="Abrir productos seleccionados"><svg class="cart-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 7H6"/><circle cx="9.5" cy="19" r="1.25"/><circle cx="17.5" cy="19" r="1.25"/></svg><b>Selección</b><small data-selection-count>0</small></button>
+    <button class="header-cart inventory-selection-trigger" type="button" data-open-selection aria-label="Abrir selección: 0 productos, total $0"><svg class="cart-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 7H6"/><circle cx="9.5" cy="19" r="1.25"/><circle cx="17.5" cy="19" r="1.25"/></svg><small data-selection-count>0</small><span class="cart-separator" aria-hidden="true">·</span><strong data-selection-header-total>$0</strong></button>
   </header>
   <div class="nav-overlay" id="inventory-nav-overlay" hidden></div>
 
