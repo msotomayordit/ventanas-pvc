@@ -38,6 +38,7 @@
 </svg>
 <input id="search-input" type="search" autocomplete="off" placeholder="Buscar ventanas, perfiles, manillas…">
 <button type="button" id="search-clear" aria-label="Limpiar búsqueda" hidden>×</button>
+<div class="search-suggestions-panel" id="search-suggestions" role="listbox" aria-label="Sugerencias de productos" hidden></div>
 </form>
 <button class="cart-trigger" type="button" data-open-cart aria-label="Abrir mi solicitud">
 <span class="cart-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 7H6"/><circle cx="9.5" cy="19" r="1.25"/><circle cx="17.5" cy="19" r="1.25"/></svg></span>
@@ -70,11 +71,12 @@
 </form>
 <div class="smart-suggestions" aria-label="Búsquedas frecuentes"><span>Prueba con:</span><button type="button" data-smart-query="corredera blanca">Corredera blanca</button><button type="button" data-smart-query="manilla negro">Manilla negra</button><button type="button" data-smart-query="perfil marco">Perfil de marco</button></div>
 </div>
-<div class="hero-showcase" aria-label="Ventanas y componentes disponibles">
-<a class="showcase-main" href="#catalogo" data-category="ventanas"><img src="img/catalog/stock-05.webp" width="720" height="720" alt="Ventana PVC corredera blanca"><span><b>Ventanas en stock</b><small>Medidas listas para entrega</small></span></a>
-<button class="showcase-item showcase-profile" type="button" data-smart-query="perfil marco"><img src="img/catalog/accessory-01.webp" width="420" height="420" alt="Perfil PVC de marco"><span>Perfiles PVC</span></button>
-<button class="showcase-item showcase-hardware" type="button" data-smart-query="manilla"><img src="img/catalog/accessory-20.webp" width="420" height="420" alt="Herrajes para ventanas PVC"><span>Manillas y herrajes</span></button>
-<a class="showcase-config" href="#configurador"><span>¿No está tu medida?</span><b>Ármala aquí →</b></a>
+<div class="hero-transformation" id="hero-transformation" style="--compare-position:50%" aria-label="Comparación antes y después de renovar las ventanas">
+<figure class="transformation-shot transformation-before"><img src="img/antes.png" width="1200" height="675" alt="Casa antes de renovar sus ventanas"><figcaption>Antes</figcaption></figure>
+<figure class="transformation-shot transformation-after"><img src="img/despues.png" width="1200" height="675" alt="Casa con ventanas PVC instaladas"><figcaption>Después</figcaption></figure>
+<div class="transformation-divider" aria-hidden="true"><span>↔</span></div>
+<input id="transformation-control" type="range" min="0" max="100" value="50" aria-label="Desliza para comparar el antes y el después">
+<div class="transformation-caption"><span>El cambio se ve y se siente</span><a href="#catalogo" data-category="ventanas">Ver ventanas disponibles →</a></div>
 </div>
 </section>
 <section class="market shell" id="catalogo">
