@@ -996,6 +996,22 @@ a:hover {
   margin-bottom: 0;
 }
 
+.acc-hero-photo {
+  margin: 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 0.45rem;
+  overflow: hidden;
+}
+
+.acc-hero-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+}
+
 .laminas-muestra {
   margin: 0;
 }
@@ -1083,10 +1099,31 @@ a:hover {
 }
 
 @media (min-width: 900px) {
-  .acc-header {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 1.75rem 1.5rem;
-    align-items: end;
+  .section-accesorios .acc-header {
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 24rem);
+    grid-template-areas:
+      "intro photo"
+      "laminas photo";
+    gap: 1.25rem 1.5rem;
+    align-items: start;
+  }
+
+  .section-accesorios .acc-header .section-intro {
+    grid-area: intro;
+  }
+
+  .acc-hero-photo {
+    grid-area: photo;
+    align-self: stretch;
+  }
+
+  .acc-hero-photo img {
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .section-accesorios .laminas-muestra {
+    grid-area: laminas;
   }
 
   .laminas-list {
@@ -1191,6 +1228,11 @@ a:hover {
 
 .calc-heading {
   margin: 0 0 1.5rem;
+}
+
+.calc-heading .calc-note {
+  margin-top: 0.85rem;
+  max-width: 42rem;
 }
 
 .acc-header .calc-heading,
