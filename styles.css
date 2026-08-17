@@ -152,17 +152,17 @@ main {
 .hero-compare {
   --compare-position: 70%;
   position: absolute;
-  top: 50%;
-  bottom: auto;
+  top: 0;
+  bottom: 0;
   left: 0;
   z-index: 0;
-  width: min(42%, 40rem);
+  width: 42%;
   max-width: none;
-  height: auto;
-  aspect-ratio: 4 / 3;
+  height: 100%;
+  aspect-ratio: auto;
   overflow: hidden;
   background: #17232b;
-  transform: translateY(-50%);
+  transform: none;
   touch-action: pan-y;
   user-select: none;
 }
@@ -185,6 +185,14 @@ main {
   object-position: center;
   transform: none;
   animation: none;
+}
+
+.hero-shot--before img {
+  object-position: center 48%;
+}
+
+.hero-shot--after img {
+  object-position: center 50%;
 }
 
 .hero-shot::after {
@@ -323,7 +331,11 @@ main {
 }
 
 .hero-bestsellers {
+  min-height: clamp(12rem, calc(100svh - 5rem - clamp(25rem, 31.5vw, 30rem)), 30rem);
   padding: 1.15rem var(--space) 1.35rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   border-bottom: 1px solid var(--line);
   background: #f4f7f7;
 }
@@ -2242,7 +2254,9 @@ body.cart-open {
   }
 
   .hero-bestsellers {
+    min-height: 0;
     padding: 1rem 0 1.15rem;
+    display: block;
   }
 
   .hero-bestsellers-head {
