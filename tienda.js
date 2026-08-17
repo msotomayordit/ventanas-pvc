@@ -1,222 +1,72 @@
 (() => {
   "use strict";
   const WHATSAPP = "56950187327";
-  const STORAGE_KEY = "frame-pvc-solicitud-v2";
-  const RECENT_KEY = "frame-pvc-vistos-v1";
+  const STORAGE_KEY = "frame-pvc-inventario-seleccion";
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-  const money = (value) => new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(Number(value) || 0);
+  const money = (value) => `$${Number(value || 0).toLocaleString("es-CL")}`;
   const clean = (value = "") => String(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
-  const escapeHtml = (value = "") => String(value).replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char]);
-  const slugType = (text) => ["corredera", "proyectante", "fija", "puerta"].find((type) => clean(text).includes(type)) || "";
+  const safe = (value = "") => String(value).replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char]);
+  const optimizedImage = (path) => { const match = String(path).match(/img\/(stock|accesorios)\/(\d+)\.jpg$/i); return match ? `img/catalog/${match[1] === "stock" ? "stock" : "accessory"}-${match[2]}.webp` : path; };
   const categoryLabels = { ventanas: "Ventanas", perfiles: "Perfiles PVC", manillas: "Manillas", cremonas: "Cremonas", refuerzos: "Refuerzos", accesorios: "Accesorios" };
-  const availabilityLabels = { confirmado: "Stock confirmado", consultar: "Disponible para consultar", fabricacion: "Fabricación" };
   const colorLabels = { blanco: "Blanco", nogal: "Nogal", roble: "Roble dorado", antracita: "Antracita", negro: "Negro", cafe: "Café" };
-  function optimizedImage(path) {
-    const match = String(path).match(/img\/(stock|accesorios)\/(\d+)\.jpg$/i); if (!match) return path;
-    return `img/catalog/${match[1] === "stock" ? "stock" : "accessory"}-${match[2]}.webp`;
-  }
+  const availabilityLabels = { confirmado: "Stock confirmado", consultar: "Consultar disponibilidad" };
+  const typeOf = (text) => ["corredera", "proyectante", "fija", "puerta"].find((type) => clean(text).includes(type)) || "";
+  const accessoryCategory = (item) => { const category = clean(item.categoria); if (category.includes("perfil")) return "perfiles"; if (category.includes("manilla")) return "manillas"; if (category.includes("cremona")) return "cremonas"; if (category.includes("refuerzo") || category.includes("cerradero")) return "refuerzos"; return "accesorios"; };
+  const variantLabel = (key) => ({ blanco: "Blanco", "roble-nogal": "Roble dorado / Nogal", "antracita-negro": "Antracita / Negro", "negro-cafe": "Negro / Café", "blanco-negro-cafe": "Blanco / Negro / Café" })[key] || key.replaceAll("-", " / ");
+  const variantColors = (key) => Object.keys(colorLabels).filter((color) => clean(key).includes(color));
+  const inferUnit = (item, category) => { const text = clean(`${item.nombre} ${item.detalle}`); if (text.includes("tira") || category === "perfiles") return "Tira"; if (text.includes("juego") || text.includes("par de")) return "Juego"; if (text.includes("felpa") || text.includes("burlete")) return "Rollo"; return "Unidad"; };
 
-  function accessoryCategory(item) {
-    const category = clean(item.categoria);
-    if (category.includes("perfil")) return "perfiles";
-    if (category.includes("manilla")) return "manillas";
-    if (category.includes("cremona")) return "cremonas";
-    if (category.includes("refuerzo") || category.includes("cerradero")) return "refuerzos";
-    return "accesorios";
-  }
-  function variantLabel(key) {
-    return { blanco: "Blanco", "roble-nogal": "Roble dorado / Nogal", "antracita-negro": "Antracita / Negro", "negro-cafe": "Negro / Café", "blanco-negro-cafe": "Blanco / Negro / Café" }[key] || key.replaceAll("-", " / ");
-  }
-  function variantColors(key) {
-    const value = clean(key); const colors = [];
-    Object.keys(colorLabels).forEach((color) => { if (value.includes(color) || (color === "roble" && value.includes("roble"))) colors.push(color); });
-    return colors;
-  }
-  function inferUnit(item, category) {
-    const text = clean(`${item.nombre} ${item.detalle}`);
-    if (text.includes("tira")) return "Tira";
-    if (text.includes("juego") || text.includes("par de")) return "Juego";
-    if (text.includes("felpa") || text.includes("burlete")) return "Rollo";
-    if (category === "perfiles") return "Tira";
-    return "Unidad";
-  }
-  function normalizeWindowProduct(item) {
-    return { id: `window-${item.id}`, group: "VENTANAS", category: "ventanas", categoryLabel: "Ventanas", type: slugType(item.modelo), name: item.modelo, detail: "Ventana PVC termopanel lista para entrega", price: Number(item.precio), image: optimizedImage(item.imagen), width: Math.round(Number(item.ancho) * 100), height: Math.round(Number(item.alto) * 100), colors: ["blanco"], availability: "confirmado", unit: "Unidad", variants: [] };
-  }
-  function normalizeAccessoryProduct(item) {
-    const category = accessoryCategory(item);
-    const variants = Object.entries(item.precios || {}).map(([key, price]) => ({ id: key, label: variantLabel(key), price: Number(price), colors: variantColors(key) }));
-    const colors = [...new Set(variants.flatMap((variant) => variant.colors))];
-    return { id: `accessory-${item.id}`, group: category === "perfiles" ? "PERFILES" : "ACCESORIOS", category, categoryLabel: categoryLabels[category], type: slugType(`${item.categoria} ${item.nombre}`), name: item.nombre, detail: item.detalle, price: variants.length ? Math.min(...variants.map((variant) => variant.price)) : Number(item.precio), image: optimizedImage(item.imagen), width: null, height: null, colors, availability: "consultar", unit: inferUnit(item, category), variants };
-  }
-  const products = [...(window.STOCK_VENTANAS || []).map(normalizeWindowProduct), ...(window.STOCK_ACCESORIOS || []).map(normalizeAccessoryProduct)];
-  const pageSize = () => window.innerWidth <= 760 ? 8 : 12;
-  const state = { query: "", categories: new Set(), types: new Set(), colors: new Set(), availability: new Set(), maxPrice: 400000, widthMin: 0, heightMin: 0, sort: "relevance", visibleLimit: pageSize(), cart: loadCart(), compare: [], recent: loadRecent(), config: { type: "corredera", color: "blanco", width: 120, height: 120 }, detailProduct: null };
-  let lastPanelTrigger = null;
+  const products = [
+    ...(window.STOCK_VENTANAS || []).map((item) => ({ id: `window-${item.id}`, group: "VENTANAS", category: "ventanas", type: typeOf(item.modelo), name: item.modelo, detail: "Ventana PVC termopanel lista para entrega", price: Number(item.precio), image: optimizedImage(item.imagen), width: Math.round(Number(item.ancho) * 100), height: Math.round(Number(item.alto) * 100), colors: ["blanco"], availability: "confirmado", unit: "Unidad", variants: [] })),
+    ...(window.STOCK_ACCESORIOS || []).map((item) => { const category = accessoryCategory(item); const variants = Object.entries(item.precios || {}).map(([key, price]) => ({ id: key, label: variantLabel(key), price: Number(price), colors: variantColors(key) })); return { id: `accessory-${item.id}`, group: category === "perfiles" ? "PERFILES" : "ACCESORIOS", category, type: typeOf(`${item.categoria} ${item.nombre}`), name: item.nombre, detail: item.detalle, price: variants.length ? Math.min(...variants.map((variant) => variant.price)) : Number(item.precio), image: optimizedImage(item.imagen), width: null, height: null, colors: [...new Set(variants.flatMap((variant) => variant.colors))], availability: "consultar", unit: inferUnit(item, category), variants }; }),
+  ];
+  const state = { query: "", category: "todos", types: new Set(), colors: new Set(), availability: new Set(), maxPrice: 400000, width: 0, height: 0, sort: "relevance", limit: innerWidth < 720 ? 8 : 12, selection: loadSelection(), compare: [], current: null };
+  const aliases = { corredera: ["corredera", "corrediza"], corrediza: ["corrediza", "corredera"], ventana: ["ventana", "ventanas"], perfil: ["perfil", "perfiles", "marco"], tirador: ["tirador", "manilla"], manija: ["manija", "manilla"], cierre: ["cierre", "cerradero", "cremona"] };
 
-  function loadCart() {
-    try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      if (!Array.isArray(saved)) return [];
-      return saved.filter((item) => item && typeof item.id === "string" && Number.isFinite(Number(item.price))).map((item) => ({ id: item.id, group: String(item.group || "PRODUCTOS"), name: String(item.name || "Producto"), detail: String(item.detail || ""), price: Number(item.price), image: String(item.image || ""), qty: Math.max(1, Math.min(99, Number(item.qty) || 1)) }));
-    } catch { return []; }
-  }
-  function saveCart() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.cart)); } catch { /* localStorage can be unavailable. */ } }
-  function loadRecent() { try { const ids = JSON.parse(localStorage.getItem(RECENT_KEY)); return Array.isArray(ids) ? ids.filter((id) => typeof id === "string").slice(0, 6) : []; } catch { return []; } }
-  function saveRecent() { try { localStorage.setItem(RECENT_KEY, JSON.stringify(state.recent)); } catch { /* localStorage can be unavailable. */ } }
-  function searchable(product) { return clean([product.name, product.categoryLabel, product.detail, product.type, product.unit, ...product.colors.map((color) => colorLabels[color]), product.width && `${product.width} ${product.height} ${product.width}x${product.height}`].filter(Boolean).join(" ")); }
-  function matchesQuery(product) {
-    const aliases = { corredera: ["corredera", "corrediza"], corrediza: ["corrediza", "corredera"], tirador: ["tirador", "manilla"], asa: ["asa", "manilla"], rieles: ["rieles", "riel"] };
-    const query = clean(state.query).replace(/(\d)\s*[x×]\s*(\d)/g, "$1x$2");
-    const haystack = searchable(product);
-    return query.split(/\s+/).filter(Boolean).every((term) => (aliases[term] || [term]).some((candidate) => haystack.includes(candidate)));
-  }
-  function filteredProducts() {
-    const filtered = products.filter((product) => matchesQuery(product) && (!state.categories.size || state.categories.has(product.category)) && (!state.types.size || state.types.has(product.type)) && (!state.colors.size || [...state.colors].some((color) => product.colors.includes(color))) && (!state.availability.size || state.availability.has(product.availability)) && product.price <= state.maxPrice && (!state.widthMin || (product.width && product.width >= state.widthMin)) && (!state.heightMin || (product.height && product.height >= state.heightMin)));
-    return filtered.sort((a, b) => state.sort === "price-asc" ? a.price - b.price : state.sort === "price-desc" ? b.price - a.price : state.sort === "name" ? a.name.localeCompare(b.name, "es") : state.sort === "measure" ? (a.width || Infinity) - (b.width || Infinity) : products.indexOf(a) - products.indexOf(b));
-  }
+  function loadSelection() { try { const value = JSON.parse(localStorage.getItem(STORAGE_KEY)); return Array.isArray(value) ? value : []; } catch { return []; } }
+  function saveSelection() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.selection)); } catch { /* Storage puede estar deshabilitado. */ } }
+  function searchable(product) { return clean([product.name, product.detail, categoryLabels[product.category], product.type, product.unit, product.width && `${product.width} ${product.height} ${product.width}x${product.height}`, ...product.colors.map((color) => colorLabels[color])].filter(Boolean).join(" ")); }
+  function matches(product, query = state.query) { return clean(query).replace(/(\d)\s*[x×]\s*(\d)/g, "$1x$2").split(/\s+/).filter(Boolean).every((term) => (aliases[term] || [term]).some((candidate) => searchable(product).includes(candidate))); }
+  function filteredProducts() { return products.filter((product) => matches(product) && (state.category === "todos" || product.category === state.category) && (!state.types.size || state.types.has(product.type)) && (!state.colors.size || [...state.colors].some((color) => product.colors.includes(color))) && (!state.availability.size || state.availability.has(product.availability)) && product.price <= state.maxPrice && (!state.width || (product.width && product.width >= state.width)) && (!state.height || (product.height && product.height >= state.height))).sort((a, b) => state.sort === "price-asc" ? a.price - b.price : state.sort === "price-desc" ? b.price - a.price : state.sort === "name" ? a.name.localeCompare(b.name, "es") : state.sort === "measure" ? (a.width || Infinity) - (b.width || Infinity) : products.indexOf(a) - products.indexOf(b)); }
+  function measure(product) { return product.width ? `${product.width} × ${product.height} cm` : ""; }
+  function variants(product) { return product.variants.length ? product.variants : [{ id: "base", label: product.colors.length ? product.colors.map((color) => colorLabels[color]).join(" / ") : "Estándar", price: product.price }]; }
+
   function productCard(product) {
-    const measure = product.width ? `${product.width} × ${product.height} cm` : "";
-    const pricePrefix = product.variants.length > 1 ? "Desde " : "";
-    const selected = state.compare.includes(product.id);
-    return `<article class="product-card"><button class="product-image" type="button" data-view="${escapeHtml(product.id)}" aria-label="Ver detalle de ${escapeHtml(product.name)}"><img src="${escapeHtml(product.image)}" width="420" height="336" loading="lazy" alt="${escapeHtml(product.name)}"><span class="stock-tag is-${escapeHtml(product.availability)}">${escapeHtml(availabilityLabels[product.availability])}</span></button><div class="product-body"><span class="product-category">${escapeHtml(product.categoryLabel)}</span><button class="product-title" type="button" data-view="${escapeHtml(product.id)}"><h3>${escapeHtml(product.name)}</h3></button><p class="product-detail">${escapeHtml(product.detail)}</p><div class="product-specs">${measure ? `<span>${escapeHtml(measure)}</span>` : ""}<span>${escapeHtml(product.unit)}</span>${product.variants.length ? `<span>${product.variants.length} ${product.variants.length === 1 ? "variante" : "variantes"}</span>` : ""}</div><div class="product-payment"><strong>${pricePrefix}${money(product.price)}</strong><small>12 cuotas ref. de ${money(Math.ceil(product.price / 12))}</small></div><div class="product-buy"><button class="compare-toggle${selected ? " is-selected" : ""}" type="button" data-compare="${escapeHtml(product.id)}" aria-pressed="${selected}">${selected ? "✓ Comparando" : "+ Comparar"}</button><button class="add-button" type="button" data-view="${escapeHtml(product.id)}" aria-label="Ver opciones de ${escapeHtml(product.name)}">+</button></div></div></article>`;
+    const selected = state.compare.includes(product.id), productMeasure = measure(product);
+    return `<article class="inventory-card"><button class="inventory-photo" type="button" data-review="${safe(product.id)}" aria-label="Revisar ${safe(product.name)}"><img src="${safe(product.image)}" width="420" height="336" loading="lazy" alt="${safe(product.name)}"><span>${safe(availabilityLabels[product.availability])}</span></button><div class="inventory-card-body"><small class="inventory-category">${safe(categoryLabels[product.category])}</small><h2>${safe(product.name)}</h2><p class="inventory-description">${safe(product.detail)}</p><div class="inventory-specs">${productMeasure ? `<span>${safe(productMeasure)} · ${safe(product.unit)}</span>` : `<span>${safe(product.unit)}${product.variants.length ? ` · ${product.variants.length} variantes` : ""}</span>`}</div><div class="inventory-price"><strong>${product.variants.length > 1 ? "Desde " : ""}${money(product.price)}</strong><small>12 cuotas ref. de ${money(Math.ceil(product.price / 12))}</small></div><div class="inventory-card-actions"><button type="button" data-compare="${safe(product.id)}" aria-pressed="${selected}">${selected ? "✓ Revisando" : "+ Comparar"}</button><button class="review-button" type="button" data-review="${safe(product.id)}">Revisar producto</button></div></div></article>`;
   }
-  function renderProducts(resetLimit = false) {
-    if (resetLimit) state.visibleLimit = pageSize();
-    const results = filteredProducts(), shown = results.slice(0, state.visibleLimit);
-    $("#product-grid").innerHTML = shown.map(productCard).join("");
-    $("#results-count").textContent = `${results.length} ${results.length === 1 ? "producto" : "productos"} · mostrando ${shown.length}`;
-    $("#empty-state").hidden = results.length !== 0;
-    $("#load-more-wrap").hidden = shown.length >= results.length;
-    $("#load-more-count").textContent = shown.length < results.length ? `(${results.length - shown.length} restantes)` : "";
-    renderActiveFilters();
-  }
-  function countValues(key) {
-    const counts = new Map(); products.forEach((product) => { const values = key === "colors" ? product.colors : [product[key]]; values.filter(Boolean).forEach((value) => counts.set(value, (counts.get(value) || 0) + 1)); }); return counts;
-  }
-  function filterMarkup(name, entries, labels) {
-    return entries.map(([value, count]) => `<label><span><input type="checkbox" name="${escapeHtml(name)}" value="${escapeHtml(value)}"> ${escapeHtml(labels[value] || value)}</span><small>${count}</small></label>`).join("");
-  }
-  function renderFilterOptions() {
-    $("#category-filters").innerHTML = filterMarkup("category", [...countValues("category")], categoryLabels);
-    $("#type-filters").innerHTML = filterMarkup("type", [...countValues("type")], { corredera: "Corredera", proyectante: "Proyectante", fija: "Fija", puerta: "Puerta" });
-    $("#color-filters").innerHTML = filterMarkup("color", [...countValues("colors")], colorLabels);
-    $("#availability-filters").innerHTML = filterMarkup("availability", [...countValues("availability")], availabilityLabels);
-  }
-  function renderActiveFilters() {
-    const labels = [...state.categories].map((value) => ({ type: "category", value, label: categoryLabels[value] })).concat([...state.types].map((value) => ({ type: "type", value, label: value })), [...state.colors].map((value) => ({ type: "color", value, label: colorLabels[value] })), [...state.availability].map((value) => ({ type: "availability", value, label: availabilityLabels[value] })));
-    if (state.query) labels.unshift({ type: "query", value: state.query, label: `“${state.query}”` });
-    $("#active-filters").innerHTML = labels.map((item) => `<button type="button" data-remove-filter="${escapeHtml(item.type)}" data-value="${escapeHtml(item.value)}">${escapeHtml(item.label)} ×</button>`).join("");
-    const count = labels.length + (state.maxPrice < 400000 ? 1 : 0) + (state.widthMin ? 1 : 0) + (state.heightMin ? 1 : 0); $("#filter-badge").hidden = count === 0; $("#filter-badge").textContent = count;
-  }
-  function setCategory(category) {
-    state.categories.clear(); if (category !== "todos") state.categories.add(category);
-    $$('[name="category"]').forEach((input) => { input.checked = state.categories.has(input.value); });
-    $$(".nav-chip[data-category]").forEach((element) => element.classList.toggle("is-active", element.dataset.category === category));
-    renderProducts(true); $("#catalogo").scrollIntoView({ behavior: "smooth" }); closePanels();
-  }
-  function resetFilters() {
-    state.query = ""; state.categories.clear(); state.types.clear(); state.colors.clear(); state.availability.clear(); state.maxPrice = 400000; state.widthMin = 0; state.heightMin = 0; state.sort = "relevance";
-    $("#search-input").value = ""; $("#search-clear").hidden = true; $$("#filters input[type=checkbox]").forEach((input) => { input.checked = false; }); $("#price-range").value = 400000; $("#price-output").textContent = money(400000); $("#width-min").value = ""; $("#height-min").value = ""; $("#sort-select").value = "relevance"; $$(".nav-chip[data-category]").forEach((element) => element.classList.toggle("is-active", element.dataset.category === "todos")); renderProducts(true);
-  }
+  function renderProducts(reset = false) { if (reset) state.limit = innerWidth < 720 ? 8 : 12; const results = filteredProducts(), shown = results.slice(0, state.limit); $("#inventory-grid").innerHTML = shown.map(productCard).join(""); $("#inventory-results").textContent = `${results.length} productos · mostrando ${shown.length}`; $("#inventory-empty").hidden = results.length !== 0; $("#inventory-more").hidden = shown.length >= results.length; renderActive(); }
+  function renderActive() { const active = []; if (state.query) active.push(`“${state.query}”`); if (state.category !== "todos") active.push(categoryLabels[state.category]); active.push(...state.types, ...[...state.colors].map((color) => colorLabels[color]), ...[...state.availability].map((item) => availabilityLabels[item])); $("#inventory-active").innerHTML = active.map((label) => `<span>${safe(label)}</span>`).join(""); $("#inventory-filter-count").textContent = active.length; }
+  function filterMarkup(name, values, labels) { return values.map((value) => `<label><input type="checkbox" name="${name}" value="${safe(value)}"> ${safe(labels[value] || value)}</label>`).join(""); }
+  function renderFilters() { $("#inventory-types").innerHTML = filterMarkup("type", ["corredera", "proyectante", "fija", "puerta"], { corredera: "Corredera", proyectante: "Proyectante", fija: "Fija", puerta: "Puerta" }); $("#inventory-colors").innerHTML = filterMarkup("color", Object.keys(colorLabels), colorLabels); $("#inventory-availability").innerHTML = filterMarkup("availability", Object.keys(availabilityLabels), availabilityLabels); }
+  function renderSuggestions() { const value = $("#inventory-query").value.trim(), panel = $("#inventory-suggestions"); if (value.length < 2) { panel.hidden = true; return; } const matchesList = products.filter((product) => matches(product, value)).slice(0, 6); panel.innerHTML = matchesList.length ? matchesList.map((product) => `<button type="button" data-suggestion="${safe(product.name)}"><img src="${safe(product.image)}" alt=""><span><b>${safe(product.name)}</b><small>${safe(categoryLabels[product.category])} · ${money(product.price)}</small></span></button>`).join("") : "<p>No encontramos coincidencias.</p>"; panel.hidden = false; }
 
-  function cartCount() { return state.cart.reduce((sum, item) => sum + item.qty, 0); }
-  function addCart(item, qty = 1) { const found = state.cart.find((entry) => entry.id === item.id); if (found) found.qty = Math.min(99, found.qty + qty); else state.cart.push({ ...item, qty }); saveCart(); renderCart(); toast(`${item.name} agregado`); }
-  function renderCart() {
-    const count = cartCount(); $$('[data-cart-count]').forEach((element) => { element.textContent = count; });
-    if (!state.cart.length) $("#cart-items").innerHTML = '<div class="cart-empty"><div><h3>Tu solicitud está vacía</h3><p>Agrega productos o configura una ventana a medida.</p></div></div>';
-    else $("#cart-items").innerHTML = state.cart.map((item) => `<article class="cart-item">${item.image ? `<img src="${escapeHtml(item.image)}" width="65" height="65" alt="">` : '<div class="window-thumb">▦</div>'}<div><h3>${escapeHtml(item.name)}</h3><p>${escapeHtml(item.detail)}</p><strong>${money(item.price * item.qty)}</strong><div class="qty"><button type="button" data-qty="-1" data-cart-id="${escapeHtml(item.id)}" aria-label="Disminuir">−</button><span>${item.qty}</span><button type="button" data-qty="1" data-cart-id="${escapeHtml(item.id)}" aria-label="Aumentar">+</button></div></div><button class="remove-item" type="button" data-remove-cart="${escapeHtml(item.id)}" aria-label="Eliminar ${escapeHtml(item.name)}">×</button></article>`).join("");
-    const total = state.cart.reduce((sum, item) => sum + item.price * item.qty, 0); $("#cart-total").textContent = money(total);
-    const link = $("#cart-whatsapp"); link.classList.toggle("is-disabled", !count); link.setAttribute("aria-disabled", String(!count)); link.href = count ? `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(cartMessage())}` : "#";
-  }
-  function cartMessage() {
-    const groups = [...new Set(state.cart.map((item) => item.group))]; const lines = ["Hola, quiero realizar la siguiente solicitud en FRAME PVC DEPOT:", ""];
-    groups.forEach((group) => { lines.push(group, ""); state.cart.filter((item) => item.group === group).forEach((item) => { lines.push(`${item.qty} × ${item.name}`, item.detail, money(item.price * item.qty), ""); }); });
-    lines.push("TOTAL REFERENCIAL", money(state.cart.reduce((sum, item) => sum + item.price * item.qty, 0)), "", "Quisiera confirmar disponibilidad, despacho y condiciones de pago."); return lines.filter((line, index, all) => line || all[index - 1]).join("\n");
-  }
+  function renderReview(product) { state.current = product; $("#product-review-title").textContent = product.name; const productVariants = variants(product), productMeasure = measure(product); $("#product-review-content").innerHTML = `<div class="review-image"><img src="${safe(product.image)}" alt="${safe(product.name)}"></div><div class="review-copy"><span class="inventory-category">${safe(categoryLabels[product.category])}</span><p>${safe(product.detail)}</p><dl class="review-specs">${productMeasure ? `<div><dt>Medida</dt><dd>${safe(productMeasure)}</dd></div>` : ""}<div><dt>Unidad</dt><dd>${safe(product.unit)}</dd></div><div><dt>Disponibilidad</dt><dd>${safe(availabilityLabels[product.availability])}</dd></div></dl><label class="review-choice">Variante<select id="review-variant">${productVariants.map((variant) => `<option value="${safe(variant.id)}" data-price="${variant.price}">${safe(variant.label)} — ${money(variant.price)}</option>`).join("")}</select></label><div class="review-purchase"><div><small>Precio unitario</small><strong id="review-price">${money(productVariants[0].price)}</strong></div><label>Cantidad<input id="review-qty" type="number" min="1" max="99" value="1"></label></div><button class="review-add" id="review-add" type="button">Agregar a mi selección</button></div>`; openPanel("review"); }
+  function addCurrent() { const product = state.current; if (!product) return; const select = $("#review-variant"), option = select.selectedOptions[0], qty = Math.max(1, Math.min(99, Number($("#review-qty").value) || 1)), id = `${product.id}-${select.value}`; const existing = state.selection.find((item) => item.id === id); if (existing) existing.qty = Math.min(99, existing.qty + qty); else state.selection.push({ id, name: product.name, detail: [measure(product), product.unit, option.textContent.split(" — ")[0]].filter(Boolean).join(" · "), price: Number(option.dataset.price), image: product.image, qty }); saveSelection(); renderSelection(); toast("Producto agregado a tu selección"); closePanels(); }
+  function renderSelection() { const count = state.selection.reduce((sum, item) => sum + item.qty, 0); $$('[data-selection-count]').forEach((element) => { element.textContent = count; }); $("#selection-items").innerHTML = count ? state.selection.map((item) => `<article class="selection-item"><img src="${safe(item.image)}" alt=""><div><h3>${safe(item.name)}</h3><p>${safe(item.detail)}</p><strong>${money(item.price * item.qty)}</strong><div class="selection-item-actions"><button data-qty="-1" data-id="${safe(item.id)}">−</button><span>${item.qty}</span><button data-qty="1" data-id="${safe(item.id)}">+</button></div></div><button data-remove="${safe(item.id)}" aria-label="Eliminar">×</button></article>`).join("") : '<div class="selection-empty"><p>Aún no has seleccionado productos.</p></div>'; const total = state.selection.reduce((sum, item) => sum + item.price * item.qty, 0), link = $("#selection-whatsapp"); $("#selection-total").textContent = money(total); link.setAttribute("aria-disabled", String(!count)); link.href = count ? `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(selectionMessage(total))}` : "#"; }
+  function selectionMessage(total) { return ["Hola, quiero consultar estos productos de FRAME PVC DEPOT:", "", ...state.selection.flatMap((item) => [`${item.qty} × ${item.name}`, item.detail, money(item.price * item.qty), ""]), "TOTAL REFERENCIAL", money(total), "", "Quisiera confirmar disponibilidad, variantes y despacho."].join("\n"); }
 
-  function rememberProduct(product) { state.recent = [product.id, ...state.recent.filter((id) => id !== product.id)].slice(0, 6); saveRecent(); renderRecent(); }
-  function renderRecent() {
-    const recent = state.recent.map((id) => products.find((product) => product.id === id)).filter(Boolean);
-    $("#recent-products").hidden = !recent.length;
-    $("#recent-rail").innerHTML = recent.map((product) => `<button type="button" data-view="${escapeHtml(product.id)}"><img src="${escapeHtml(product.image)}" width="84" height="70" loading="lazy" alt=""><span><b>${escapeHtml(product.name)}</b><small>${money(product.price)}</small></span></button>`).join("");
-  }
-  function compatibleProducts(product) {
-    const categories = product.category === "ventanas" ? ["manillas", "accesorios"] : product.category === "perfiles" ? ["refuerzos", "manillas"] : ["perfiles", "accesorios"];
-    return products.filter((item) => item.id !== product.id && categories.includes(item.category)).slice(0, 3);
-  }
-  function toggleCompare(id) {
-    if (state.compare.includes(id)) state.compare = state.compare.filter((item) => item !== id);
-    else if (state.compare.length < 3) state.compare.push(id);
-    else { toast("Puedes comparar hasta 3 productos"); return; }
-    renderProducts(); renderCompare();
-  }
-  function renderCompare() {
-    const selected = state.compare.map((id) => products.find((product) => product.id === id)).filter(Boolean);
-    $("#compare-tray").hidden = !selected.length; $("#compare-summary").textContent = `${selected.length} de 3 seleccionados`;
-    $("#compare-thumbs").innerHTML = selected.map((product) => `<img src="${escapeHtml(product.image)}" width="42" height="42" alt="${escapeHtml(product.name)}">`).join("");
-    $("#open-compare").disabled = selected.length < 2;
-    $("#compare-content").innerHTML = selected.length < 2 ? "<p>Selecciona al menos dos productos.</p>" : `<div class="compare-table"><div class="compare-row compare-products"><b>Producto</b>${selected.map((product) => `<span><img src="${escapeHtml(product.image)}" width="110" height="90" alt=""><strong>${escapeHtml(product.name)}</strong></span>`).join("")}</div>${[["Precio", (p) => money(p.price)], ["Cuota referencial", (p) => `12 × ${money(Math.ceil(p.price / 12))}`], ["Medida", (p) => p.width ? `${p.width} × ${p.height} cm` : "No aplica"], ["Categoría", (p) => p.categoryLabel], ["Unidad", (p) => p.unit], ["Disponibilidad", (p) => availabilityLabels[p.availability]], ["Variantes", (p) => p.variants.length || "Estándar"]].map(([label, value]) => `<div class="compare-row"><b>${label}</b>${selected.map((product) => `<span>${escapeHtml(value(product))}</span>`).join("")}</div>`).join("")}</div>`;
-  }
-
-  function renderProductDetail(product) {
-    state.detailProduct = product; rememberProduct(product); $("#product-detail-title").textContent = product.name;
-    const measure = product.width ? `${product.width} × ${product.height} cm` : "";
-    const variants = product.variants.length ? product.variants : [{ id: "base", label: product.colors.length ? product.colors.map((color) => colorLabels[color]).join(" / ") : "Estándar", price: product.price, colors: product.colors }];
-    const compatible = compatibleProducts(product);
-    $("#product-detail-panel").innerHTML = `<div class="detail-image"><img src="${escapeHtml(product.image)}" width="700" height="560" alt="${escapeHtml(product.name)}"></div><div class="detail-copy"><span class="stock-tag is-${escapeHtml(product.availability)}">${escapeHtml(availabilityLabels[product.availability])}</span><p class="product-category">${escapeHtml(product.categoryLabel)}</p><p>${escapeHtml(product.detail)}</p><dl class="detail-specs">${measure ? `<div><dt>Medida</dt><dd>${escapeHtml(measure)}</dd></div>` : ""}<div><dt>Unidad de venta</dt><dd>${escapeHtml(product.unit)}</dd></div><div><dt>Disponibilidad</dt><dd>${escapeHtml(availabilityLabels[product.availability])}</dd></div></dl><label class="detail-variant">Terminación / variante<select id="detail-variant">${variants.map((variant) => `<option value="${escapeHtml(variant.id)}" data-price="${variant.price}">${escapeHtml(variant.label)} — ${money(variant.price)}</option>`).join("")}</select></label><div class="detail-purchase"><div><small>Precio unitario</small><strong id="detail-price">${money(variants[0].price)}</strong><small id="detail-installment">12 cuotas referenciales de ${money(Math.ceil(variants[0].price / 12))}</small></div><label>Cantidad<input id="detail-qty" type="number" min="1" max="99" value="1" inputmode="numeric"></label></div><button class="button primary full" id="detail-add" type="button">Agregar a mi solicitud</button><small class="detail-note">La disponibilidad, despacho y condición de pago se confirman antes de concretar la compra.</small>${compatible.length ? `<section class="compatible"><h3>También podrías necesitar</h3><div>${compatible.map((item) => `<button type="button" data-view="${escapeHtml(item.id)}"><img src="${escapeHtml(item.image)}" width="62" height="54" alt=""><span><b>${escapeHtml(item.name)}</b><small>${money(item.price)}</small></span></button>`).join("")}</div></section>` : ""}</div>`;
-  }
-  function addDetailToCart() {
-    const product = state.detailProduct; if (!product) return;
-    const select = $("#detail-variant"); const variant = product.variants.find((item) => item.id === select.value) || { id: "base", label: product.colors.map((color) => colorLabels[color]).join(" / ") || "Estándar", price: product.price };
-    const qty = Math.max(1, Math.min(99, Number($("#detail-qty").value) || 1)); const measure = product.width ? `${product.width} × ${product.height} cm` : "";
-    addCart({ id: `${product.id}-${variant.id}`, group: product.group, name: product.name, detail: [measure, product.unit, variant.label, product.detail].filter(Boolean).join(" · "), price: variant.price, image: product.image }, qty);
-    const productPanel = $("#product-drawer"); productPanel.style.transition = "none"; closePanels(false); openPanel("cart", $("[data-open-cart]")); requestAnimationFrame(() => { productPanel.style.transition = ""; });
-  }
-
-  const pageRegions = () => [$("header"), $("main"), $("footer"), $(".mobile-dock")].filter(Boolean);
-  function openPanel(name, trigger = document.activeElement) {
-    closePanels(false); lastPanelTrigger = trigger; $("#overlay").hidden = false; document.body.classList.add("is-locked");
-    const panels = { cart: $("#cart-drawer"), filters: $("#filters"), sections: $("#sections-drawer"), product: $("#product-drawer") }; const panel = panels[name]; pageRegions().filter((region) => !region.contains(panel)).forEach((region) => { region.inert = true; }); panel.inert = false; panel.classList.add("is-open"); panel.setAttribute("aria-hidden", "false"); setTimeout(() => $(".icon-close", panel)?.focus(), 50);
-  }
-  function closePanels(returnFocus = true) {
-    $("#overlay").hidden = true; document.body.classList.remove("is-locked"); pageRegions().forEach((region) => { region.inert = false; });
-    [$("#cart-drawer"), $("#filters"), $("#sections-drawer"), $("#product-drawer")].forEach((panel) => { panel.classList.remove("is-open"); panel.setAttribute("aria-hidden", "true"); panel.inert = true; });
-    if (returnFocus && lastPanelTrigger?.isConnected) lastPanelTrigger.focus();
-  }
-  function trapFocus(event) {
-    const panel = [$("#cart-drawer"), $("#filters"), $("#sections-drawer"), $("#product-drawer")].find((item) => item.classList.contains("is-open")); if (!panel || event.key !== "Tab") return;
-    const focusable = $$('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])', panel); if (!focusable.length) return;
-    const first = focusable[0], last = focusable.at(-1); if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-  }
-  let toastTimer; function toast(text) { const element = $("#toast"); element.textContent = text; element.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => element.classList.remove("show"), 2200); }
-
-  function initConfigurator() {
-    const rates = window.TARIFAS_CALCULADORA || { minimo: 0, tipos: {}, colores: {} };
-    $("#type-options").innerHTML = Object.entries(rates.tipos).map(([key, item], index) => `<div class="choice"><input id="type-${escapeHtml(key)}" type="radio" name="config-type" value="${escapeHtml(key)}" ${index === 0 ? "checked" : ""}><label for="type-${escapeHtml(key)}">${escapeHtml(item.nombre)}</label></div>`).join("");
-    const swatches = { blanco: "#f5f3e9", nogal: "#684130", "roble-dorado": "#a8793c", antracita: "#343c40", negro: "#121619" };
-    $("#color-options").innerHTML = Object.entries(rates.colores).map(([key, item], index) => `<div class="color-choice"><input id="color-${escapeHtml(key)}" type="radio" name="config-color" value="${escapeHtml(key)}" ${index === 0 ? "checked" : ""}><label for="color-${escapeHtml(key)}"><i style="background:${swatches[key] || "#fff"}"></i>${escapeHtml(item.nombre)}</label></div>`).join(""); updateConfig();
-  }
-  function currentQuote() { const rates = window.TARIFAS_CALCULADORA; const type = rates.tipos[state.config.type]; const color = rates.colores[state.config.color]; const area = state.config.width * state.config.height / 10000; const rate = typeof type.precioM2 === "object" ? type.precioM2[state.config.color] : type.precioM2 * (color.factor || 1); return { name: type.nombre, color: color.nombre, area, price: Math.max(rates.minimo || 0, Math.round(area * rate)) }; }
-  function updateConfig() { const quote = currentQuote(); $("#config-name").textContent = quote.name; $("#config-color").textContent = quote.color; $("#config-measure").textContent = `${state.config.width} × ${state.config.height} cm`; $("#config-area").textContent = `${quote.area.toLocaleString("es-CL", { maximumFractionDigits: 2 })} m²`; $("#config-price").textContent = money(quote.price); const colors = { blanco: "#f3f3ed", nogal: "#684130", "roble-dorado": "#a8793c", antracita: "#343c40", negro: "#121619" }; $("#window-visual").style.borderColor = colors[state.config.color]; $$("#window-visual span").forEach((element) => { element.style.borderColor = colors[state.config.color]; }); }
+  function toggleCompare(id) { state.compare = state.compare.includes(id) ? state.compare.filter((item) => item !== id) : state.compare.length < 3 ? [...state.compare, id] : state.compare; if (state.compare.length === 3 && !state.compare.includes(id)) toast("Puedes comparar hasta 3 productos"); renderCompare(); renderProducts(); }
+  function renderCompare() { const selected = state.compare.map((id) => products.find((product) => product.id === id)).filter(Boolean); $("#compare-bar").hidden = !selected.length; $("#compare-status").textContent = `${selected.length} de 3 seleccionados`; $("#compare-open").disabled = selected.length < 2; $("#compare-content").innerHTML = selected.length < 2 ? "<p>Selecciona al menos dos productos.</p>" : `<div class="compare-table">${[["Producto", (p) => `<img src="${safe(p.image)}" alt=""><strong>${safe(p.name)}</strong>`], ["Precio", (p) => money(p.price)], ["Medida", (p) => measure(p) || "No aplica"], ["Categoría", (p) => categoryLabels[p.category]], ["Unidad", (p) => p.unit], ["Disponibilidad", (p) => availabilityLabels[p.availability]], ["Variantes", (p) => p.variants.length || "Estándar"]].map(([label, value]) => `<div class="compare-row"><b>${label}</b>${selected.map((product) => `<span>${value(product)}</span>`).join("")}</div>`).join("")}</div>`; }
+  function openPanel(name) { closePanels(); $("#inventory-overlay").hidden = false; document.body.classList.add("is-locked"); const panel = name === "review" ? $("#product-review") : $("#selection-drawer"); panel.classList.add("is-open"); panel.setAttribute("aria-hidden", "false"); }
+  function closePanels() { $("#inventory-overlay").hidden = true; document.body.classList.remove("is-locked"); [$("#product-review"), $("#selection-drawer")].forEach((panel) => { panel.classList.remove("is-open"); panel.setAttribute("aria-hidden", "true"); }); }
+  function clearFilters() { state.query = ""; state.category = "todos"; state.types.clear(); state.colors.clear(); state.availability.clear(); state.maxPrice = 400000; state.width = 0; state.height = 0; $("#inventory-query").value = ""; $$('#inventory-filters input[type="checkbox"]').forEach((input) => { input.checked = false; }); $("#inventory-price").value = 400000; $("#inventory-price-output").textContent = money(400000); $("#inventory-width").value = ""; $("#inventory-height").value = ""; $$('[data-category]').forEach((button) => button.classList.toggle("is-active", button.dataset.category === "todos")); renderProducts(true); }
+  let toastTimer; function toast(text) { const element = $("#inventory-toast"); element.textContent = text; element.classList.add("is-visible"); clearTimeout(toastTimer); toastTimer = setTimeout(() => element.classList.remove("is-visible"), 2200); }
 
   function bindEvents() {
-    $("#search-form").addEventListener("submit", (event) => event.preventDefault()); $("#search-input").addEventListener("input", (event) => { state.query = event.target.value; $("#search-clear").hidden = !state.query; renderProducts(true); }); $("#search-clear").addEventListener("click", () => { state.query = ""; $("#search-input").value = ""; $("#search-clear").hidden = true; renderProducts(true); });
-    $("#hero-search").addEventListener("submit", (event) => { event.preventDefault(); state.query = $("#hero-search-input").value.trim(); $("#search-input").value = state.query; $("#search-clear").hidden = !state.query; renderProducts(true); $("#catalogo").scrollIntoView({ behavior: "smooth" }); });
-    $$('[data-smart-query]').forEach((button) => button.addEventListener("click", () => { state.query = button.dataset.smartQuery; $("#hero-search-input").value = state.query; $("#search-input").value = state.query; $("#search-clear").hidden = false; renderProducts(true); $("#catalogo").scrollIntoView({ behavior: "smooth" }); }));
-    document.addEventListener("click", (event) => { const compare = event.target.closest("[data-compare]"); if (compare) { toggleCompare(compare.dataset.compare); return; } const category = event.target.closest("[data-category]"); if (category && !category.closest("#category-filters")) { event.preventDefault(); setCategory(category.dataset.category); } const view = event.target.closest("[data-view]"); if (view) { const product = products.find((item) => item.id === view.dataset.view); if (product) { renderProductDetail(product); openPanel("product", view); } } if (event.target.closest("[data-open-cart]")) openPanel("cart", event.target.closest("[data-open-cart]")); if (event.target.closest("[data-open-sections]")) openPanel("sections", event.target.closest("[data-open-sections]")); if (event.target.closest("[data-focus-search]")) { closePanels(false); $("#search-input").focus(); window.scrollTo({ top: 0, behavior: "smooth" }); } if (event.target.closest("[data-section-link]")) closePanels(false); if (event.target.closest("[data-clear-all]")) resetFilters(); });
-    $("#filters").addEventListener("change", (event) => { if (!event.target.matches('input[type="checkbox"]')) return; const map = { category: state.categories, type: state.types, color: state.colors, availability: state.availability }; const set = map[event.target.name]; event.target.checked ? set.add(event.target.value) : set.delete(event.target.value); renderProducts(true); });
-    $("#price-range").addEventListener("input", (event) => { state.maxPrice = Number(event.target.value); $("#price-output").textContent = money(state.maxPrice); renderProducts(true); }); [["#width-min", "widthMin"], ["#height-min", "heightMin"]].forEach(([id, key]) => $(id).addEventListener("input", (event) => { state[key] = Number(event.target.value) || 0; renderProducts(true); })); $("#sort-select").addEventListener("change", (event) => { state.sort = event.target.value; renderProducts(true); });
-    $("#active-filters").addEventListener("click", (event) => { const button = event.target.closest("[data-remove-filter]"); if (!button) return; if (button.dataset.removeFilter === "query") { state.query = ""; $("#search-input").value = ""; } else { const map = { category: state.categories, type: state.types, color: state.colors, availability: state.availability }; map[button.dataset.removeFilter].delete(button.dataset.value); const input = $(`[name="${button.dataset.removeFilter}"][value="${button.dataset.value}"]`); if (input) input.checked = false; } renderProducts(true); });
-    $("#clear-filters").addEventListener("click", resetFilters); $("#load-more").addEventListener("click", () => { state.visibleLimit += pageSize(); renderProducts(); }); $("#open-filters").addEventListener("click", (event) => openPanel("filters", event.currentTarget)); ["#close-filters", "#close-cart", "#close-sections", "#close-product"].forEach((id) => $(id).addEventListener("click", () => closePanels())); $("#overlay").addEventListener("click", () => closePanels()); document.addEventListener("keydown", (event) => { if (event.key === "Escape") closePanels(); trapFocus(event); });
-    $("#product-detail-panel").addEventListener("change", (event) => { if (event.target.id === "detail-variant") { const price = Number(event.target.selectedOptions[0].dataset.price); $("#detail-price").textContent = money(price); $("#detail-installment").textContent = `12 cuotas referenciales de ${money(Math.ceil(price / 12))}`; } }); $("#product-detail-panel").addEventListener("click", (event) => { if (event.target.id === "detail-add") addDetailToCart(); });
-    $("#open-compare").addEventListener("click", () => { renderCompare(); $("#compare-dialog").showModal(); }); $("#close-compare").addEventListener("click", () => $("#compare-dialog").close()); $("#clear-compare").addEventListener("click", () => { state.compare = []; renderProducts(); renderCompare(); });
-    $("#clear-recent").addEventListener("click", () => { state.recent = []; saveRecent(); renderRecent(); });
-    $("#cart-items").addEventListener("click", (event) => { const qty = event.target.closest("[data-qty]"), remove = event.target.closest("[data-remove-cart]"); if (qty) { const item = state.cart.find((entry) => entry.id === qty.dataset.cartId); if (item) { item.qty += Number(qty.dataset.qty); if (item.qty < 1) state.cart = state.cart.filter((entry) => entry.id !== item.id); } } if (remove) state.cart = state.cart.filter((entry) => entry.id !== remove.dataset.removeCart); if (qty || remove) { saveCart(); renderCart(); } });
-    $("#config-form").addEventListener("input", (event) => { if (event.target.name === "config-type") state.config.type = event.target.value; if (event.target.name === "config-color") state.config.color = event.target.value; if (event.target.id === "config-width") state.config.width = Math.max(30, Math.min(500, Number(event.target.value) || 30)); if (event.target.id === "config-height") state.config.height = Math.max(30, Math.min(500, Number(event.target.value) || 30)); updateConfig(); });
-    $("#add-config").addEventListener("click", () => { if (!$("#config-form").reportValidity()) return; const quote = currentQuote(); addCart({ id: `custom-${state.config.type}-${state.config.color}-${state.config.width}-${state.config.height}`, group: "FABRICACIÓN", name: quote.name, detail: `${state.config.width} × ${state.config.height} cm · Color: ${quote.color} · ${quote.area.toLocaleString("es-CL", { maximumFractionDigits: 2 })} m²`, price: quote.price, image: "" }); openPanel("cart", $("#add-config")); });
+    const menu = $("#inventory-menu-toggle"), nav = $("#inventory-nav"), navOverlay = $("#inventory-nav-overlay"); const closeMenu = () => { menu.setAttribute("aria-expanded", "false"); nav.classList.remove("is-open"); navOverlay.hidden = true; }; menu.addEventListener("click", () => { const open = menu.getAttribute("aria-expanded") !== "true"; menu.setAttribute("aria-expanded", String(open)); nav.classList.toggle("is-open", open); navOverlay.hidden = !open; }); navOverlay.addEventListener("click", closeMenu); nav.addEventListener("click", closeMenu);
+    $("#inventory-search").addEventListener("submit", (event) => { event.preventDefault(); state.query = $("#inventory-query").value.trim(); $("#inventory-suggestions").hidden = true; renderProducts(true); }); $("#inventory-query").addEventListener("input", (event) => { state.query = event.target.value; renderSuggestions(); renderProducts(true); });
+    $("#inventory-categories").addEventListener("click", (event) => { const button = event.target.closest("[data-category]"); if (!button) return; state.category = button.dataset.category; $$('[data-category]').forEach((item) => item.classList.toggle("is-active", item === button)); renderProducts(true); });
+    $("#inventory-filters").addEventListener("change", (event) => { const map = { type: state.types, color: state.colors, availability: state.availability }, set = map[event.target.name]; if (set) event.target.checked ? set.add(event.target.value) : set.delete(event.target.value); renderProducts(true); });
+    $("#inventory-price").addEventListener("input", (event) => { state.maxPrice = Number(event.target.value); $("#inventory-price-output").textContent = money(state.maxPrice); renderProducts(true); }); $("#inventory-width").addEventListener("input", (event) => { state.width = Number(event.target.value) || 0; renderProducts(true); }); $("#inventory-height").addEventListener("input", (event) => { state.height = Number(event.target.value) || 0; renderProducts(true); }); $("#inventory-sort").addEventListener("change", (event) => { state.sort = event.target.value; renderProducts(); });
+    $("#inventory-more").addEventListener("click", () => { state.limit += innerWidth < 720 ? 8 : 12; renderProducts(); }); $("#inventory-clear").addEventListener("click", clearFilters); $("[data-clear-all]").addEventListener("click", clearFilters);
+    const toggleFilters = (open) => { $("#inventory-filters").classList.toggle("is-open", open); $("#inventory-filter-trigger").setAttribute("aria-expanded", String(open)); }; $("#inventory-filter-trigger").addEventListener("click", () => toggleFilters(!$("#inventory-filters").classList.contains("is-open"))); $("#inventory-filter-close").addEventListener("click", () => toggleFilters(false)); $$('[data-open-filters]').forEach((button) => button.addEventListener("click", () => toggleFilters(true)));
+    document.addEventListener("click", (event) => { const suggestion = event.target.closest("[data-suggestion]"); if (suggestion) { $("#inventory-query").value = suggestion.dataset.suggestion; state.query = suggestion.dataset.suggestion; $("#inventory-suggestions").hidden = true; renderProducts(true); return; } const review = event.target.closest("[data-review]"); if (review) { renderReview(products.find((product) => product.id === review.dataset.review)); return; } const compare = event.target.closest("[data-compare]"); if (compare) { toggleCompare(compare.dataset.compare); return; } if (event.target.closest("[data-open-selection]")) openPanel("selection"); if (event.target.closest("[data-close-panel]")) closePanels(); if (event.target.closest("[data-focus-search]")) { $("#inventory-query").focus(); scrollTo({ top: 0, behavior: "smooth" }); } });
+    $("#inventory-overlay").addEventListener("click", closePanels); $("#product-review-content").addEventListener("change", (event) => { if (event.target.id === "review-variant") $("#review-price").textContent = money(event.target.selectedOptions[0].dataset.price); }); $("#product-review-content").addEventListener("click", (event) => { if (event.target.id === "review-add") addCurrent(); });
+    $("#selection-items").addEventListener("click", (event) => { const qty = event.target.closest("[data-qty]"), remove = event.target.closest("[data-remove]"); if (qty) { const item = state.selection.find((entry) => entry.id === qty.dataset.id); if (item) item.qty += Number(qty.dataset.qty); if (item?.qty < 1) state.selection = state.selection.filter((entry) => entry.id !== item.id); } if (remove) state.selection = state.selection.filter((entry) => entry.id !== remove.dataset.remove); if (qty || remove) { saveSelection(); renderSelection(); } });
+    $("#compare-open").addEventListener("click", () => $("#inventory-compare").showModal()); $("#compare-close").addEventListener("click", () => $("#inventory-compare").close()); $("#compare-clear").addEventListener("click", () => { state.compare = []; renderCompare(); renderProducts(); }); document.addEventListener("keydown", (event) => { if (event.key === "Escape") closePanels(); });
   }
 
-  renderFilterOptions(); initConfigurator(); bindEvents(); closePanels(false); renderProducts(); renderCart(); renderRecent(); renderCompare(); $("#year").textContent = new Date().getFullYear();
+  renderFilters(); bindEvents(); renderProducts(); renderSelection(); renderCompare();
 })();

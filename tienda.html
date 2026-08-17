@@ -1,339 +1,58 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Compra ventanas PVC termopanel, perfiles y accesorios o solicita fabricación a medida. Cotiza y envía tu solicitud por WhatsApp.">
-<meta property="og:title" content="FRAME PVC DEPOT | Ventanas PVC, perfiles y accesorios">
-<meta property="og:description" content="Ventanas listas, insumos para fabricantes y fabricación a medida.">
-<meta property="og:type" content="website">
-<meta property="og:image" content="img/ventana-blanco.jpg">
-<title>FRAME PVC DEPOT | Ventanas PVC, perfiles y accesorios</title>
-<link rel="icon" href="img/logo-frame-pvc-rounded.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="tienda.css">
-<script src="stock.js" defer>
-</script>
-<script src="accesorios.js" defer>
-</script>
-<script src="precios.js" defer>
-</script>
-<script src="tienda.js" defer>
-</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Inventario técnico de ventanas PVC, perfiles y componentes FRAME PVC DEPOT." />
+  <title>Inventario técnico — FRAME PVC DEPOT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="tienda.css" />
 </head>
-<body>
-<a class="skip-link" href="#catalogo">Ir al catálogo</a>
-<header class="market-header">
-<div class="header-main shell">
-<button class="sections-trigger" type="button" data-open-sections aria-label="Abrir secciones"><span aria-hidden="true">&#9776;</span><span>Secciones</span></button>
-<a class="brand" href="index.html" aria-label="Volver al sitio principal de FRAME PVC DEPOT">
-<img src="img/logo-frame-pvc-rounded.svg" width="182" height="41" alt="FRAME PVC">
-</a>
-<form class="search" id="search-form" role="search">
-<label class="sr-only" for="search-input">Buscar productos</label>
-<svg aria-hidden="true" viewBox="0 0 24 24">
-<path d="m21 21-4.35-4.35m2.35-5.65a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z"/>
-</svg>
-<input id="search-input" type="search" autocomplete="off" placeholder="Buscar ventanas, perfiles, manillas…">
-<button type="button" id="search-clear" aria-label="Limpiar búsqueda" hidden>×</button>
-</form>
-<button class="cart-trigger" type="button" data-open-cart aria-label="Abrir mi solicitud">
-<span class="cart-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 7H6"/><circle cx="9.5" cy="19" r="1.25"/><circle cx="17.5" cy="19" r="1.25"/></svg></span>
-<span class="cart-copy">Mi solicitud</span>
-<b data-cart-count>0</b>
-</button>
-</div>
-<nav class="category-nav shell" aria-label="Categorías principales">
-<button class="nav-chip is-active" data-category="todos">Todos</button>
-<button class="nav-chip" data-category="ventanas">Ventanas</button>
-<button class="nav-chip" data-category="perfiles">Perfiles</button>
-<button class="nav-chip" data-category="manillas">Manillas</button>
-<button class="nav-chip" data-category="cremonas">Cremonas</button>
-<button class="nav-chip" data-category="accesorios">Accesorios</button>
-<a class="nav-chip store-return" href="index.html">Volver al sitio</a>
-<a class="nav-chip nav-config" href="#configurador">Arma tu ventana</a>
-</nav>
-</header>
-<div class="payment-promo" aria-label="Beneficio de pago">
-<div class="payment-promo-track shell"><span class="payment-kicker">Financia tu proyecto</span><p><strong>Hasta 12 cuotas</strong> a precio contado con</p><img src="img/mercado-pago.svg" width="108" height="27" alt="Mercado Pago"><small>Pago coordinado después de confirmar disponibilidad</small></div>
-</div>
-<main id="inicio">
-<section class="hero shell">
-<div class="hero-copy">
-<p class="eyebrow">69 productos para construir, reparar o renovar</p>
-<h1>Todo para tu ventana, <em>en un solo lugar.</em></h1>
-<p>Busca por producto, medida, color o uso. Te mostramos primero lo que realmente te puede servir.</p>
-<form class="hero-finder" id="hero-search" role="search">
-<label for="hero-search-input">¿Qué estás buscando?</label>
-<div><input id="hero-search-input" type="search" autocomplete="off" placeholder="Ej. manilla negra o ventana 120 × 90"><button type="submit">Buscar</button></div>
-</form>
-<div class="smart-suggestions" aria-label="Búsquedas frecuentes"><span>Prueba con:</span><button type="button" data-smart-query="corredera blanca">Corredera blanca</button><button type="button" data-smart-query="manilla negro">Manilla negra</button><button type="button" data-smart-query="perfil marco">Perfil de marco</button></div>
-</div>
-<div class="hero-showcase" aria-label="Ventanas y componentes disponibles">
-<a class="showcase-main" href="#catalogo" data-category="ventanas"><img src="img/catalog/stock-05.webp" width="720" height="720" alt="Ventana PVC corredera blanca"><span><b>Ventanas en stock</b><small>Medidas listas para entrega</small></span></a>
-<button class="showcase-item showcase-profile" type="button" data-smart-query="perfil marco"><img src="img/catalog/accessory-01.webp" width="420" height="420" alt="Perfil PVC de marco"><span>Perfiles PVC</span></button>
-<button class="showcase-item showcase-hardware" type="button" data-smart-query="manilla"><img src="img/catalog/accessory-20.webp" width="420" height="420" alt="Herrajes para ventanas PVC"><span>Manillas y herrajes</span></button>
-<a class="showcase-config" href="#configurador"><span>¿No está tu medida?</span><b>Ármala aquí →</b></a>
-</div>
-</section>
-<section class="market shell" id="catalogo">
-<div class="market-top">
-<div class="section-heading">
-<p class="eyebrow">Catálogo unificado</p>
-<h2>¿Qué necesitas?</h2>
-</div>
-<button class="filter-trigger button secondary" id="open-filters" type="button">Filtrar <span id="filter-badge" hidden>0</span>
-</button>
-</div>
-<div class="market-layout">
-<aside class="filters" id="filters" aria-label="Filtros del catálogo">
-<div class="filter-head">
-<h3>Filtros</h3>
-<button type="button" class="icon-close" id="close-filters" aria-label="Cerrar filtros">×</button>
-</div>
-<fieldset>
-<legend>Categoría</legend>
-<div id="category-filters" class="check-list">
-</div>
-</fieldset>
-<fieldset>
-<legend>Tipo</legend>
-<div class="check-list" id="type-filters">
-</div>
-</fieldset>
-<fieldset>
-<legend>Color</legend>
-<div class="check-list" id="color-filters">
-</div>
-</fieldset>
-<fieldset>
-<legend>Precio máximo</legend>
-<label class="range-label" for="price-range">
-<span>Hasta</span>
-<output id="price-output">$400.000</output>
-</label>
-<input id="price-range" type="range" min="10000" max="400000" step="10000" value="400000">
-</fieldset>
-<fieldset>
-<legend>Disponibilidad</legend>
-<div class="check-list" id="availability-filters">
-</div>
-</fieldset>
-<fieldset>
-<legend>Medida mínima</legend>
-<div class="measure-filter">
-<label>Ancho (cm)<input id="width-min" type="number" min="0" placeholder="100">
-</label>
-<label>Alto (cm)<input id="height-min" type="number" min="0" placeholder="90">
-</label>
-</div>
-</fieldset>
-<button class="clear-filters" id="clear-filters" type="button">Limpiar filtros</button>
-</aside>
-<div class="results">
-<div class="results-bar">
-<p id="results-count" aria-live="polite">Cargando productos…</p>
-<label>Ordenar por <select id="sort-select">
-<option value="relevance">Relevancia</option>
-<option value="price-asc">Menor precio</option>
-<option value="price-desc">Mayor precio</option>
-<option value="name">Nombre</option>
-<option value="measure">Medida</option>
-</select>
-</label>
-</div>
-<div class="active-filters" id="active-filters">
-</div>
-<div class="product-grid" id="product-grid">
-</div>
-<div class="load-more-wrap" id="load-more-wrap"><button class="button secondary load-more" id="load-more" type="button">Mostrar más productos <span id="load-more-count"></span></button></div>
-<div class="empty-state" id="empty-state" hidden>
-<span>⌕</span>
-<h3>No encontramos coincidencias</h3>
-<p>Prueba con otra búsqueda o elimina algunos filtros.</p>
-<button class="button primary" type="button" data-clear-all>Ver todos</button>
-</div>
-</div>
-</div>
-<section class="recent-products" id="recent-products" hidden aria-labelledby="recent-title"><div class="recent-head"><div><p class="eyebrow">Retoma tu búsqueda</p><h3 id="recent-title">Vistos recientemente</h3></div><button type="button" id="clear-recent">Limpiar</button></div><div class="recent-rail" id="recent-rail"></div></section>
-</section>
-<section class="config-section" id="configurador">
-<div class="shell">
-<div class="section-heading light">
-<p class="eyebrow">Fabricación a medida</p>
-<h2>Arma tu ventana</h2>
-<p>Configura una referencia. Confirmaremos medidas y factibilidad antes de fabricar.</p>
-</div>
-<div class="configurator">
-<form id="config-form" class="config-form">
-<fieldset>
-<legend>1. Elige el tipo</legend>
-<div class="option-grid" id="type-options">
-</div>
-</fieldset>
-<fieldset>
-<legend>2. Elige el color</legend>
-<div class="color-options" id="color-options">
-</div>
-</fieldset>
-<fieldset>
-<legend>3. Ingresa las medidas</legend>
-<div class="dimension-fields">
-<label>Ancho <span>
-<input id="config-width" type="number" min="30" max="500" value="120" required> cm</span>
-</label>
-<b>×</b>
-<label>Alto <span>
-<input id="config-height" type="number" min="30" max="500" value="120" required> cm</span>
-</label>
-</div>
-<p class="form-help">Medidas referenciales entre 30 y 500 cm.</p>
-</fieldset>
-</form>
-<div class="config-preview" aria-live="polite">
-<div class="window-visual" id="window-visual">
-<span>
-</span>
-<span>
-</span>
-<i>
-</i>
-</div>
-<div class="config-summary">
-<p class="eyebrow">Tu configuración</p>
-<h3 id="config-name">Ventana corredera</h3>
-<dl>
-<div>
-<dt>Color</dt>
-<dd id="config-color">Blanco</dd>
-</div>
-<div>
-<dt>Dimensiones</dt>
-<dd id="config-measure">120 × 120 cm</dd>
-</div>
-<div>
-<dt>Superficie</dt>
-<dd id="config-area">1,44 m²</dd>
-</div>
-</dl>
-<p class="reference-label">Valor referencial</p>
-<strong class="config-price" id="config-price">$230.400</strong>
-<small>Precio sujeto a validación. No incluye instalación ni despacho.</small>
-<button class="button primary full" id="add-config" type="button">Agregar a mi solicitud</button>
-</div>
-</div>
-</div>
-</div>
-</section>
-<section class="service-strip shell" id="services-title">
-<div class="section-heading">
-<p class="eyebrow">Más que productos</p>
-<h2>Acompañamos tu proyecto</h2>
-</div>
-<div class="services">
-<article>
-<b>01</b>
-<h3>Aislación que se nota</h3>
-<p>PVC y termopanel para mejorar el confort térmico y acústico.</p>
-</article>
-<article>
-<b>02</b>
-<h3>Instalación orientada</h3>
-<p>Te ayudamos a elegir la solución y preparar tu vano.</p>
-</article>
-<article>
-<b>03</b>
-<h3>Vidrio termopanel</h3>
-<p>Fabricación para proyectos residenciales y fabricantes.</p>
-</article>
-<article>
-<b>04</b>
-<h3>Atención directa</h3>
-<p>Confirma stock, despacho y fabricación por WhatsApp.</p>
-</article>
-</div>
-</section>
-</main>
-<footer>
-<div class="shell footer-grid">
-<div>
-<a class="brand footer-brand" href="#inicio">
-<img src="img/logo-frame-pvc-rounded.svg" width="182" height="41" alt="FRAME PVC">
-</a>
-<p>Ventanas PVC, perfiles y accesorios para construir mejor.</p>
-</div>
-<div>
-<h2>Categorías</h2>
-<a href="#catalogo" data-category="ventanas">Ventanas</a>
-<a href="#catalogo" data-category="perfiles">Perfiles</a>
-<a href="#catalogo" data-category="accesorios">Accesorios</a>
-</div>
-<div>
-<h2>Fabricación</h2>
-<a href="#configurador">Arma tu ventana</a>
-<a href="#configurador">Termopanel</a>
-</div>
-<div>
-<h2>Contacto</h2>
-<a href="https://wa.me/56950187327" target="_blank" rel="noopener">WhatsApp +56 9 5018 7327</a>
-<p>Chile</p>
-</div>
-</div>
-<div class="shell footer-bottom">
-<span>© <span id="year">
-</span> FRAME PVC DEPOT</span>
-<span>Precios referenciales sujetos a confirmación.</span>
-</div>
-</footer>
-<div class="overlay" id="overlay" hidden>
-</div>
-<aside class="sections-drawer" id="sections-drawer" aria-hidden="true" aria-labelledby="sections-title">
-<div class="drawer-head"><div><p class="eyebrow">Explorar FRAME PVC</p><h2 id="sections-title">Secciones</h2></div><button class="icon-close" id="close-sections" type="button" aria-label="Cerrar secciones">&times;</button></div>
-<nav class="sections-list" aria-label="Todas las secciones">
-<a href="#inicio" data-section-link><span>&#8962;</span><b>Inicio</b><small>Portada y novedades</small></a>
-<button type="button" data-category="todos"><span>&#9638;</span><b>Todos los productos</b><small>Catálogo completo</small></button>
-<button type="button" data-category="ventanas"><span>&#9635;</span><b>Ventanas</b><small>Modelos disponibles</small></button>
-<button type="button" data-category="perfiles"><span>#</span><b>Perfiles PVC</b><small>Corredera y proyectante</small></button>
-<button type="button" data-category="manillas"><span>&#8599;</span><b>Manillas</b><small>Herrajes y cierres</small></button>
-<button type="button" data-category="cremonas"><span>=</span><b>Cremonas</b><small>Distintas medidas</small></button>
-<button type="button" data-category="refuerzos"><span>+</span><b>Refuerzos</b><small>Acero y cerraderos</small></button>
-<button type="button" data-category="accesorios"><span>+</span><b>Accesorios</b><small>Montaje y fabricación</small></button>
-<a href="#configurador" data-section-link><span>&#9671;</span><b>Arma tu ventana</b><small>Cotización a medida</small></a>
-<a href="#services-title" data-section-link><span>i</span><b>Servicios</b><small>Instalación y termopanel</small></a>
-<a href="https://wa.me/56950187327" target="_blank" rel="noopener"><span>&#9673;</span><b>Contacto</b><small>Habla con nuestro equipo</small></a>
-</nav>
-</aside>
-<aside class="product-drawer" id="product-drawer" aria-hidden="true" aria-labelledby="product-detail-title">
-<div class="drawer-head"><div><p class="eyebrow">Detalle del producto</p><h2 id="product-detail-title">Producto</h2></div><button class="icon-close" id="close-product" type="button" aria-label="Cerrar detalle">×</button></div>
-<div class="product-detail-panel" id="product-detail-panel"></div>
-</aside>
-<aside class="cart-drawer" id="cart-drawer" aria-hidden="true" aria-labelledby="cart-title">
-<div class="drawer-head">
-<div>
-<p class="eyebrow">Cotización consolidada</p>
-<h2 id="cart-title">Mi solicitud</h2>
-</div>
-<button class="icon-close" id="close-cart" type="button" aria-label="Cerrar solicitud">×</button>
-</div>
-<div class="cart-items" id="cart-items">
-</div>
-<div class="cart-foot">
-<div>
-<span>Total referencial</span>
-<strong id="cart-total">$0</strong>
-</div>
-<p>Confirmaremos disponibilidad, despacho y valor final.</p>
-<a class="button whatsapp full is-disabled" id="cart-whatsapp" href="#" target="_blank" rel="noopener" aria-disabled="true">Enviar solicitud por WhatsApp</a>
-</div>
-</aside>
-<div class="compare-tray" id="compare-tray" hidden><div><strong>Comparar productos</strong><span id="compare-summary">0 de 3 seleccionados</span></div><div id="compare-thumbs"></div><button class="button primary" id="open-compare" type="button">Comparar</button><button class="icon-close" id="clear-compare" type="button" aria-label="Vaciar comparación">×</button></div>
-<dialog class="compare-dialog" id="compare-dialog" aria-labelledby="compare-title"><div class="compare-dialog-head"><div><p class="eyebrow">Decide con claridad</p><h2 id="compare-title">Comparar productos</h2></div><button class="icon-close" id="close-compare" type="button" aria-label="Cerrar comparación">×</button></div><div class="compare-content" id="compare-content"></div></dialog>
-<nav class="mobile-dock" aria-label="Accesos rápidos">
-<a href="index.html"><span>&#8962;</span>Sitio</a><button type="button" data-open-sections><span>&#9776;</span>Secciones</button><button type="button" data-focus-search><span>&#8981;</span>Buscar</button><a href="#configurador"><span>&#9671;</span>Armar</a><button type="button" data-open-cart><span class="cart-symbol"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 7H6"/><circle cx="9.5" cy="19" r="1.25"/><circle cx="17.5" cy="19" r="1.25"/></svg></span>Solicitud<b data-cart-count>0</b></button>
-</nav>
-<div class="toast" id="toast" role="status" aria-live="polite">
-</div>
+<body class="inventory-page">
+  <header class="site-header inventory-header">
+    <a class="logo" href="index.html" aria-label="Volver al sitio principal de FRAME PVC DEPOT">
+      <img class="logo-mark" src="img/logo-frame-pvc.png" alt="" width="512" height="512" />
+      <span class="logo-name"><span class="logo-name-main">FRAME PVC</span><span class="logo-name-sub">DEPOT</span></span>
+    </a>
+    <button class="menu-toggle" id="inventory-menu-toggle" type="button" aria-expanded="false" aria-controls="inventory-nav" aria-label="Abrir menú"><span></span><span></span><span></span></button>
+    <nav class="nav" id="inventory-nav" aria-label="Principal">
+      <a href="index.html">Sitio principal</a><a href="#inventario" aria-current="page">Inventario técnico</a><a href="index.html#calculadora">Calcular ventana</a><a href="index.html#contacto">Contacto</a>
+    </nav>
+    <button class="header-cart inventory-selection-trigger" type="button" data-open-selection aria-label="Abrir productos seleccionados"><svg class="cart-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.1 10.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 7H6"/><circle cx="9.5" cy="19" r="1.25"/><circle cx="17.5" cy="19" r="1.25"/></svg><b>Selección</b><small data-selection-count>0</small></button>
+  </header>
+  <div class="nav-overlay" id="inventory-nav-overlay" hidden></div>
+
+  <main class="inventory" id="inventario">
+    <header class="inventory-intro">
+      <div><p class="inventory-eyebrow">Consulta de productos</p><h1>Inventario técnico</h1><p>Busca, filtra y revisa ventanas, perfiles y componentes. Agrega los productos que quieras consultar.</p></div>
+      <form class="inventory-search" id="inventory-search" role="search"><label for="inventory-query">Buscar en inventario</label><div><input id="inventory-query" type="search" autocomplete="off" placeholder="Ej. ventana 120 × 90 o manilla negra" /><button type="submit">Buscar</button></div><div class="inventory-suggestions" id="inventory-suggestions" hidden></div></form>
+    </header>
+    <nav class="inventory-categories" id="inventory-categories" aria-label="Categorías">
+      <button class="is-active" type="button" data-category="todos">Todos</button><button type="button" data-category="ventanas">Ventanas</button><button type="button" data-category="perfiles">Perfiles</button><button type="button" data-category="manillas">Manillas</button><button type="button" data-category="cremonas">Cremonas</button><button type="button" data-category="refuerzos">Refuerzos</button><button type="button" data-category="accesorios">Accesorios</button>
+    </nav>
+    <div class="inventory-toolbar"><button class="inventory-filter-trigger" id="inventory-filter-trigger" type="button" aria-expanded="false" aria-controls="inventory-filters">Filtros <span id="inventory-filter-count">0</span></button><p id="inventory-results" aria-live="polite"></p><label>Ordenar por <select id="inventory-sort"><option value="relevance">Relevancia</option><option value="price-asc">Menor precio</option><option value="price-desc">Mayor precio</option><option value="name">Nombre</option><option value="measure">Medida</option></select></label></div>
+    <div class="inventory-layout">
+      <aside class="inventory-filters" id="inventory-filters" aria-label="Filtros de productos">
+        <div class="inventory-filter-head"><h2>Filtros</h2><button id="inventory-filter-close" type="button" aria-label="Cerrar filtros">×</button></div>
+        <fieldset><legend>Tipo</legend><div id="inventory-types"></div></fieldset><fieldset><legend>Color</legend><div id="inventory-colors"></div></fieldset><fieldset><legend>Disponibilidad</legend><div id="inventory-availability"></div></fieldset>
+        <fieldset><legend>Precio máximo</legend><output id="inventory-price-output">$400.000</output><input id="inventory-price" type="range" min="10000" max="400000" step="10000" value="400000" /></fieldset>
+        <fieldset><legend>Medida mínima</legend><div class="inventory-measures"><label>Ancho cm<input id="inventory-width" type="number" min="0" placeholder="100" /></label><label>Alto cm<input id="inventory-height" type="number" min="0" placeholder="90" /></label></div></fieldset>
+        <button class="inventory-clear" id="inventory-clear" type="button">Limpiar filtros</button>
+      </aside>
+      <section class="inventory-products" aria-label="Resultados"><div class="inventory-active" id="inventory-active"></div><div class="inventory-grid" id="inventory-grid"></div><div class="inventory-empty" id="inventory-empty" hidden><h2>No encontramos coincidencias</h2><p>Prueba otra búsqueda o elimina algunos filtros.</p><button type="button" data-clear-all>Ver todo el inventario</button></div><button class="inventory-more" id="inventory-more" type="button">Mostrar más productos</button></section>
+    </div>
+  </main>
+
+  <div class="inventory-overlay" id="inventory-overlay" hidden></div>
+  <aside class="inventory-drawer product-review" id="product-review" aria-hidden="true" aria-labelledby="product-review-title"><header><div><p>Revisión técnica</p><h2 id="product-review-title">Producto</h2></div><button type="button" data-close-panel aria-label="Cerrar revisión">×</button></header><div id="product-review-content"></div></aside>
+  <aside class="inventory-drawer selection-drawer" id="selection-drawer" aria-hidden="true" aria-labelledby="selection-title"><header><div><p>Productos por consultar</p><h2 id="selection-title">Mi selección</h2></div><button type="button" data-close-panel aria-label="Cerrar selección">×</button></header><div class="selection-items" id="selection-items"></div><footer><div><span>Total referencial</span><strong id="selection-total">$0</strong></div><p>Confirmaremos disponibilidad, variante, despacho y valor final.</p><a id="selection-whatsapp" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true">Consultar selección por WhatsApp</a></footer></aside>
+  <div class="compare-bar" id="compare-bar" hidden><div><strong>Revisar productos</strong><span id="compare-status">0 de 3 seleccionados</span></div><button id="compare-open" type="button" disabled>Comparar</button><button id="compare-clear" type="button" aria-label="Vaciar comparación">×</button></div>
+  <dialog class="inventory-compare" id="inventory-compare" aria-labelledby="inventory-compare-title"><header><h2 id="inventory-compare-title">Comparación técnica</h2><button id="compare-close" type="button" aria-label="Cerrar comparación">×</button></header><div id="compare-content"></div></dialog>
+  <nav class="inventory-mobile-nav" aria-label="Accesos rápidos"><a href="index.html"><span>⌂</span>Sitio</a><a href="#inventario"><span>▦</span>Inventario</a><button type="button" data-focus-search><span>⌕</span>Buscar</button><button type="button" data-open-filters><span>◇</span>Filtros</button><button type="button" data-open-selection><span>□</span>Selección<small data-selection-count>0</small></button></nav>
+  <div class="inventory-toast" id="inventory-toast" role="status" aria-live="polite"></div>
+  <script src="stock.js"></script><script src="accesorios.js"></script><script src="tienda.js"></script>
 </body>
 </html>
