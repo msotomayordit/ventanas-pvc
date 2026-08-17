@@ -313,52 +313,59 @@ function initCarts() {
 
 function renderStock() {
   const root = document.getElementById("stock-gallery");
-  const items = window.STOCK_VENTANAS;
+  const search = document.getElementById("marketplace-query");
+  if (!root || !search) return;
 
-  if (!root || !Array.isArray(items)) return;
+  const clean = (value = "") => String(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+  const safe = (value = "") => String(value).replace(/[&<>'"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[char]);
+  const colorLabels = { blanco: "Blanco", nogal: "Nogal", roble: "Roble dorado", antracita: "Antracita", negro: "Negro", cafe: "Café" };
+  const categoryLabels = { ventanas: "Ventanas", perfiles: "Perfiles PVC", manillas: "Manillas", cremonas: "Cremonas", refuerzos: "Refuerzos", accesorios: "Accesorios" };
+  const availabilityLabels = { confirmado: "Stock confirmado", consultar: "Consultar disponibilidad" };
+  const typeOf = (text) => ["corredera", "proyectante", "fija", "puerta"].find((type) => clean(text).includes(type)) || "";
+  const accessoryCategory = (item) => { const category = clean(item.categoria); if (category.includes("perfil")) return "perfiles"; if (category.includes("manilla")) return "manillas"; if (category.includes("cremona")) return "cremonas"; if (category.includes("refuerzo") || category.includes("cerradero")) return "refuerzos"; return "accesorios"; };
+  const variantColors = (item) => [...new Set(Object.keys(item.precios || {}).flatMap((key) => Object.keys(colorLabels).filter((color) => clean(key).includes(color))))];
+  const products = [
+    ...(window.STOCK_VENTANAS || []).map((item) => ({ id: `window-${item.id}`, cart: "stock", sourceId: item.id, category: "ventanas", type: typeOf(item.modelo), name: item.modelo, detail: "Ventana PVC termopanel lista para entrega", price: Number(item.precio), image: item.imagen, width: Math.round(Number(item.ancho) * 100), height: Math.round(Number(item.alto) * 100), colors: ["blanco"], availability: "confirmado", unit: "Unidad", variants: 0 })),
+    ...(window.STOCK_ACCESORIOS || []).map((item) => { const category = accessoryCategory(item); const prices = Object.values(item.precios || {}).map(Number).filter(Number.isFinite); return { id: `accessory-${item.id}`, cart: "acc", sourceId: item.id, category, type: typeOf(`${item.categoria} ${item.nombre}`), name: item.nombre, detail: item.detalle, price: prices.length ? Math.min(...prices) : Number(item.precio), image: item.imagen, width: null, height: null, colors: variantColors(item), availability: "consultar", unit: clean(item.detalle).includes("tira") || category === "perfiles" ? "Tira" : clean(item.nombre).includes("juego") ? "Juego" : "Unidad", variants: prices.length } }),
+  ];
+  const state = { query: "", category: "todos", types: new Set(), colors: new Set(), availability: new Set(), maxPrice: 400000, width: 0, height: 0, sort: "relevance", limit: window.innerWidth < 720 ? 8 : 12 };
+  const aliases = { corredera: ["corredera", "corrediza"], corrediza: ["corrediza", "corredera"], ventana: ["ventana", "ventanas"], ventanas: ["ventana", "ventanas"], perfil: ["perfil", "perfiles", "marco"], tirador: ["tirador", "manilla"], manija: ["manija", "manilla"], cierre: ["cierre", "cerradero", "cremona"] };
+  const searchable = (product) => clean([product.name, product.detail, categoryLabels[product.category], product.type, product.unit, product.width && `${product.width}x${product.height}`, ...product.colors.map((color) => colorLabels[color])].filter(Boolean).join(" "));
+  const matches = (product) => clean(state.query).replace(/(\d)\s*[x×]\s*(\d)/g, "$1x$2").split(/\s+/).filter(Boolean).every((term) => (aliases[term] || [term]).some((candidate) => searchable(product).includes(candidate)));
+  const filtered = () => products.filter((product) => matches(product) && (state.category === "todos" || product.category === state.category) && (!state.types.size || state.types.has(product.type)) && (!state.colors.size || [...state.colors].some((color) => product.colors.includes(color))) && (!state.availability.size || state.availability.has(product.availability)) && product.price <= state.maxPrice && (!state.width || (product.width && product.width >= state.width)) && (!state.height || (product.height && product.height >= state.height))).sort((a, b) => state.sort === "price-asc" ? a.price - b.price : state.sort === "price-desc" ? b.price - a.price : state.sort === "name" ? a.name.localeCompare(b.name, "es") : state.sort === "measure" ? (a.width || Infinity) - (b.width || Infinity) : products.indexOf(a) - products.indexOf(b));
+  const filterMarkup = (name, values, labels) => values.map((value) => `<label><input type="checkbox" name="market-${name}" value="${safe(value)}">${safe(labels[value] || value)}</label>`).join("");
+  document.getElementById("marketplace-types").innerHTML = filterMarkup("type", ["corredera", "proyectante", "fija", "puerta"], { corredera: "Corredera", proyectante: "Proyectante", fija: "Fija", puerta: "Puerta" });
+  document.getElementById("marketplace-colors").innerHTML = filterMarkup("color", Object.keys(colorLabels), colorLabels);
+  document.getElementById("marketplace-availability").innerHTML = filterMarkup("availability", Object.keys(availabilityLabels), availabilityLabels);
 
-  root.innerHTML = items
-    .map((item) => {
-      const medida = formatMedida(item.ancho, item.alto);
-      const precio = formatPrecio(item.precio);
-
-      const mismaFoto = item.id >= 1 && item.id <= 13;
-      const fotoCortada = [3, 4, 5, 7, 8, 10].includes(item.id);
-      const fotoVertical = [11, 12, 13].includes(item.id);
-      const photoClass = [
-        "stock-photo",
-        mismaFoto ? "stock-photo--small" : "",
-        fotoCortada ? "stock-photo--full" : "",
-        fotoVertical ? "stock-photo--portrait" : "",
-      ]
-        .filter(Boolean)
-        .join(" ");
-      const itemClass = mismaFoto ? "stock-item stock-item--compact" : "stock-item";
-
-      return `
-        <article class="${itemClass}">
-          <div class="${photoClass}">
-            <img src="${item.imagen}" alt="${item.modelo} ${medida}" width="640" height="480" loading="lazy" />
-          </div>
-          <div class="stock-info">
-            <h3>${item.modelo}</h3>
-            <p class="stock-size">${medida}</p>
-            <p class="stock-price">${precio}</p>
-            <button
-              type="button"
-              class="stock-buy"
-              data-add-cart="stock"
-              data-id="${item.id}"
-              data-nombre="${item.modelo}"
-              data-detalle="${medida}"
-              data-precio="${item.precio}"
-            >Agregar al carro</button>
-            <img class="pay-logo" src="img/transbank.png" alt="Transbank" width="160" height="48" loading="lazy" />
-          </div>
-        </article>
-      `;
-    })
-    .join("");
+  const renderSuggestions = () => {
+    const panel = document.getElementById("marketplace-suggestions"), value = search.value.trim();
+    if (value.length < 2) { panel.hidden = true; return; }
+    const previous = state.query; state.query = value; const suggestions = products.filter(matches).slice(0, 6); state.query = previous;
+    panel.innerHTML = suggestions.length ? suggestions.map((product) => `<button type="button" data-market-suggestion="${safe(product.name)}"><img src="${safe(product.image)}" alt="" width="46" height="46"><span><b>${safe(product.name)}</b><small>${safe(categoryLabels[product.category])} · ${formatPrecio(product.price)}</small></span></button>`).join("") : "<p>No encontramos coincidencias.</p>";
+    panel.hidden = false;
+  };
+  const renderActive = () => {
+    const active = []; if (state.query) active.push(`“${state.query}”`); if (state.category !== "todos") active.push(categoryLabels[state.category]); active.push(...state.types, ...[...state.colors].map((color) => colorLabels[color]), ...[...state.availability].map((value) => availabilityLabels[value]));
+    document.getElementById("marketplace-active").innerHTML = active.map((label) => `<span>${safe(label)}</span>`).join(""); document.getElementById("marketplace-filter-count").textContent = active.length;
+  };
+  const render = (reset = false) => {
+    if (reset) state.limit = window.innerWidth < 720 ? 8 : 12;
+    const results = filtered(), shown = results.slice(0, state.limit);
+    root.innerHTML = shown.map((product) => { const measure = product.width ? `${product.width} × ${product.height} cm` : ""; const detail = [measure, product.unit, product.variants ? `${product.variants} variantes` : ""].filter(Boolean).join(" · "); return `<article class="market-card"><div class="market-card-photo"><img src="${safe(product.image)}" alt="${safe(product.name)}" width="420" height="336" loading="lazy"><span>${safe(availabilityLabels[product.availability])}</span></div><div class="market-card-body"><small>${safe(categoryLabels[product.category])}</small><h3>${safe(product.name)}</h3><p>${safe(product.detail)}</p><div class="market-card-specs">${detail ? `<span>${safe(detail)}</span>` : ""}</div><div class="market-card-price"><strong>${product.variants > 1 ? "Desde " : ""}${formatPrecio(product.price)}</strong><small>12 cuotas ref. de ${formatPrecio(Math.ceil(product.price / 12))}</small></div><button type="button" data-add-cart="${product.cart}" data-id="${safe(product.sourceId)}" data-nombre="${safe(product.name)}" data-detalle="${safe(detail || product.detail)}" data-precio="${product.price}">Agregar al carrito</button></div></article>`; }).join("");
+    document.getElementById("marketplace-results").textContent = `${results.length} productos · mostrando ${shown.length}`; document.getElementById("marketplace-empty").hidden = results.length !== 0; document.getElementById("marketplace-more").hidden = shown.length >= results.length; renderActive();
+  };
+  document.getElementById("marketplace-search").addEventListener("submit", (event) => { event.preventDefault(); state.query = search.value.trim(); document.getElementById("marketplace-suggestions").hidden = true; render(true); });
+  search.addEventListener("input", () => { state.query = search.value; renderSuggestions(); render(true); });
+  document.querySelector(".marketplace-categories").addEventListener("click", (event) => { const button = event.target.closest("[data-market-category]"); if (!button) return; state.category = button.dataset.marketCategory; document.querySelectorAll("[data-market-category]").forEach((item) => item.classList.toggle("is-active", item === button)); render(true); });
+  document.getElementById("marketplace-filters").addEventListener("change", (event) => { const maps = { "market-type": state.types, "market-color": state.colors, "market-availability": state.availability }; const set = maps[event.target.name]; if (set) event.target.checked ? set.add(event.target.value) : set.delete(event.target.value); render(true); });
+  document.getElementById("marketplace-price").addEventListener("input", (event) => { state.maxPrice = Number(event.target.value); document.getElementById("marketplace-price-output").textContent = formatPrecio(state.maxPrice); render(true); });
+  document.getElementById("marketplace-width").addEventListener("input", (event) => { state.width = Number(event.target.value) || 0; render(true); }); document.getElementById("marketplace-height").addEventListener("input", (event) => { state.height = Number(event.target.value) || 0; render(true); });
+  document.getElementById("marketplace-sort").addEventListener("change", (event) => { state.sort = event.target.value; render(); }); document.getElementById("marketplace-more").addEventListener("click", () => { state.limit += window.innerWidth < 720 ? 8 : 12; render(); });
+  const clear = () => { state.query = ""; state.category = "todos"; state.types.clear(); state.colors.clear(); state.availability.clear(); state.maxPrice = 400000; state.width = 0; state.height = 0; search.value = ""; document.querySelectorAll('#marketplace-filters input[type="checkbox"]').forEach((input) => { input.checked = false; }); document.getElementById("marketplace-price").value = 400000; document.getElementById("marketplace-price-output").textContent = formatPrecio(400000); document.getElementById("marketplace-width").value = ""; document.getElementById("marketplace-height").value = ""; document.querySelectorAll("[data-market-category]").forEach((item) => item.classList.toggle("is-active", item.dataset.marketCategory === "todos")); render(true); };
+  document.getElementById("marketplace-clear").addEventListener("click", clear); document.querySelector("[data-market-clear]").addEventListener("click", clear); document.getElementById("marketplace-filter-toggle").addEventListener("click", (event) => { const filters = document.getElementById("marketplace-filters"), open = !filters.classList.contains("is-open"); filters.classList.toggle("is-open", open); event.currentTarget.setAttribute("aria-expanded", String(open)); });
+  document.getElementById("marketplace-suggestions").addEventListener("click", (event) => { const button = event.target.closest("[data-market-suggestion]"); if (!button) return; search.value = button.dataset.marketSuggestion; state.query = search.value; event.currentTarget.hidden = true; render(true); });
+  render();
 }
 
 function renderHeroBestsellers() {

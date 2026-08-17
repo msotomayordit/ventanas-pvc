@@ -122,31 +122,49 @@
       </ul>
     </section>
 
-    <section class="section section-stock" id="stock">
-      <div class="stock-hero">
-        <div class="stock-backdrop" aria-hidden="true">
-          <img src="img/stock-titulo.jpg" alt="" />
+    <section class="section marketplace" id="stock" aria-labelledby="marketplace-title">
+      <header class="marketplace-heading">
+        <div>
+          <p class="marketplace-kicker">Catálogo unificado</p>
+          <h2 id="marketplace-title">Encuentra lo que necesitas</h2>
+          <p>Ventanas, perfiles y componentes en un mismo buscador. Filtra sin recorrer toda la página.</p>
         </div>
-        <div class="section-intro stock-hero-text">
-          <h2>Ventanas listas en stock</h2>
-          <p>Modelos fabricados, listos para entrega. Medidas estándar con precio publicado.</p>
+        <form class="marketplace-search" id="marketplace-search" role="search">
+          <label for="marketplace-query">Buscar productos</label>
+          <div><input id="marketplace-query" type="search" autocomplete="off" placeholder="Ej. ventana 120 × 90, manilla negra…"><button type="submit">Buscar</button></div>
+          <div class="marketplace-suggestions" id="marketplace-suggestions" hidden></div>
+        </form>
+      </header>
+      <nav class="marketplace-categories" aria-label="Categorías del catálogo">
+        <button class="is-active" type="button" data-market-category="todos">Todos</button>
+        <button type="button" data-market-category="ventanas">Ventanas</button>
+        <button type="button" data-market-category="perfiles">Perfiles</button>
+        <button type="button" data-market-category="manillas">Manillas</button>
+        <button type="button" data-market-category="cremonas">Cremonas</button>
+        <button type="button" data-market-category="refuerzos">Refuerzos</button>
+        <button type="button" data-market-category="accesorios">Accesorios</button>
+      </nav>
+      <div class="marketplace-toolbar">
+        <button class="marketplace-filter-toggle" id="marketplace-filter-toggle" type="button" aria-expanded="false" aria-controls="marketplace-filters">Filtros <span id="marketplace-filter-count">0</span></button>
+        <p id="marketplace-results" aria-live="polite"></p>
+        <label>Ordenar por <select id="marketplace-sort"><option value="relevance">Relevancia</option><option value="price-asc">Menor precio</option><option value="price-desc">Mayor precio</option><option value="name">Nombre</option><option value="measure">Medida</option></select></label>
+      </div>
+      <div class="marketplace-layout">
+        <aside class="marketplace-filters" id="marketplace-filters">
+          <fieldset><legend>Tipo de ventana</legend><div id="marketplace-types"></div></fieldset>
+          <fieldset><legend>Color</legend><div id="marketplace-colors"></div></fieldset>
+          <fieldset><legend>Disponibilidad</legend><div id="marketplace-availability"></div></fieldset>
+          <fieldset><legend>Precio máximo</legend><output id="marketplace-price-output">$400.000</output><input id="marketplace-price" type="range" min="10000" max="400000" step="10000" value="400000"></fieldset>
+          <fieldset><legend>Medida mínima</legend><div class="marketplace-measures"><label>Ancho cm<input id="marketplace-width" type="number" min="0" placeholder="100"></label><label>Alto cm<input id="marketplace-height" type="number" min="0" placeholder="90"></label></div></fieldset>
+          <button class="marketplace-clear" id="marketplace-clear" type="button">Limpiar filtros</button>
+        </aside>
+        <div>
+          <div class="marketplace-active" id="marketplace-active"></div>
+          <div class="marketplace-grid" id="stock-gallery"></div>
+          <div class="marketplace-empty" id="marketplace-empty" hidden><h3>No encontramos coincidencias</h3><p>Prueba otra búsqueda o elimina algunos filtros.</p><button type="button" data-market-clear>Ver todos</button></div>
+          <button class="marketplace-more" id="marketplace-more" type="button">Mostrar más productos</button>
         </div>
       </div>
-      <aside class="shop-cart" id="cart-stock" aria-label="Carro de compra de ventanas">
-        <div class="shop-cart-head">
-          <h3>Carro de ventanas</h3>
-          <p class="shop-cart-count" data-cart-count>0 ítems</p>
-        </div>
-        <ul class="shop-cart-list" data-cart-list></ul>
-        <div class="shop-cart-foot">
-          <p class="shop-cart-total">Total: <strong data-cart-total>$0</strong></p>
-          <a class="btn btn-primary shop-cart-wa" data-cart-wa href="#" target="_blank" rel="noopener noreferrer">Pedir por WhatsApp</a>
-        </div>
-      </aside>
-      <div class="stock-gallery" id="stock-gallery"></div>
-      <p class="stock-note">
-        Para cambiar fotos y precios edita <code>stock.js</code> y reemplaza las imágenes en <code>img/stock/</code> (01.jpg a 13.jpg).
-      </p>
     </section>
 
     <section class="section section-calc" id="calculadora">
