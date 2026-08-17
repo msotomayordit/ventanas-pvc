@@ -85,9 +85,16 @@
           <p>Entrega inmediata</p>
           <h2 id="bestsellers-title">Top ventas</h2>
         </div>
-        <a href="#stock">Ver todo el stock</a>
+        <div class="hero-bestsellers-actions">
+          <div class="hero-bestsellers-controls" aria-label="Controles de Top ventas">
+            <button type="button" data-bestsellers-prev aria-label="Ver productos anteriores">&#8592;</button>
+            <button type="button" data-bestsellers-next aria-label="Ver productos siguientes">&#8594;</button>
+          </div>
+          <a href="#stock">Ver todo el stock</a>
+        </div>
       </header>
-      <div class="hero-bestsellers-list" id="hero-bestsellers-list"></div>
+      <div class="hero-bestsellers-list" id="hero-bestsellers-list" tabindex="0" aria-label="Productos más vendidos"></div>
+      <p class="hero-bestsellers-status" id="hero-bestsellers-status" aria-live="polite"></p>
     </section>
 
     <section class="section section-benefits" id="beneficios">

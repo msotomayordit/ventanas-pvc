@@ -366,7 +366,7 @@ function renderHeroBestsellers() {
   const items = window.STOCK_VENTANAS;
   if (!root || !Array.isArray(items)) return;
 
-  root.innerHTML = items.slice(0, 5).map((item) => {
+  root.innerHTML = items.map((item) => {
     const medida = formatMedida(item.ancho, item.alto);
     return `
       <article class="hero-bestseller">
@@ -379,6 +379,60 @@ function renderHeroBestsellers() {
         </div>
       </article>`;
   }).join("");
+
+  initHeroBestsellersCarousel(root);
+}
+
+function initHeroBestsellersCarousel(root) {
+  const previous = document.querySelector("[data-bestsellers-prev]");
+  const next = document.querySelector("[data-bestsellers-next]");
+  const status = document.getElementById("hero-bestsellers-status");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let timer = 0;
+
+  const cards = () => Array.from(root.querySelectorAll(".hero-bestseller"));
+  const visibleCount = () => window.innerWidth < 720 ? 1 : 3;
+  const currentIndex = () => {
+    const first = cards()[0];
+    if (!first) return 0;
+    const step = first.getBoundingClientRect().width + parseFloat(getComputedStyle(root).columnGap || 0);
+    return Math.max(0, Math.round(root.scrollLeft / step));
+  };
+  const updateStatus = () => {
+    if (!status) return;
+    const total = cards().length;
+    const start = Math.min(currentIndex() + 1, total);
+    const end = Math.min(start + visibleCount() - 1, total);
+    status.textContent = start === end ? `${start} de ${total}` : `${start}–${end} de ${total}`;
+  };
+  const goTo = (index) => {
+    const allCards = cards();
+    if (!allCards.length) return;
+    const maximum = Math.max(0, allCards.length - visibleCount());
+    const target = index > maximum ? 0 : index < 0 ? maximum : index;
+    allCards[target].scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "nearest", inline: "start" });
+    window.setTimeout(updateStatus, reduceMotion ? 0 : 380);
+  };
+  const stop = () => window.clearInterval(timer);
+  const start = () => {
+    stop();
+    if (reduceMotion || document.hidden) return;
+    timer = window.setInterval(() => goTo(currentIndex() + 1), 4500);
+  };
+
+  previous?.addEventListener("click", () => { goTo(currentIndex() - 1); start(); });
+  next?.addEventListener("click", () => { goTo(currentIndex() + 1); start(); });
+  root.addEventListener("scroll", () => window.requestAnimationFrame(updateStatus), { passive: true });
+  root.addEventListener("pointerenter", stop);
+  root.addEventListener("pointerleave", start);
+  root.addEventListener("focusin", stop);
+  root.addEventListener("focusout", start);
+  root.addEventListener("touchstart", stop, { passive: true });
+  root.addEventListener("touchend", start, { passive: true });
+  document.addEventListener("visibilitychange", () => document.hidden ? stop() : start());
+  window.addEventListener("resize", updateStatus);
+  updateStatus();
+  start();
 }
 
 function parseMedida(valor) {
