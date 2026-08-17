@@ -139,10 +139,16 @@ main {
 }
 
 .hero {
+  background: #edf2f2;
+}
+
+.hero-main {
   position: relative;
-  min-height: clamp(25rem, 31.5vw, 30rem);
+  width: min(100%, var(--max));
+  min-height: clamp(25rem, 41.25vw, 28rem);
+  margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(0, 42fr) minmax(28rem, 58fr);
+  grid-template-columns: minmax(0, 55fr) minmax(24rem, 45fr);
   align-items: center;
   overflow: hidden;
   color: #f7fafb;
@@ -156,7 +162,7 @@ main {
   bottom: 0;
   left: 0;
   z-index: 0;
-  width: 42%;
+  width: 55%;
   max-width: none;
   height: 100%;
   aspect-ratio: auto;
@@ -331,7 +337,7 @@ main {
 }
 
 .hero-bestsellers {
-  min-height: clamp(12rem, calc(100svh - 5rem - clamp(25rem, 31.5vw, 30rem)), 30rem);
+  min-height: clamp(12rem, calc(100svh - 5rem - clamp(25rem, 41.25vw, 28rem)), 30rem);
   padding: 1.15rem var(--space) 1.35rem;
   display: flex;
   flex-direction: column;
@@ -2245,7 +2251,7 @@ body.cart-open {
   }
 
 
-  .hero {
+  .hero-main {
     min-height: 0;
     padding-top: 75%;
     grid-template-columns: 1fr;
