@@ -34,8 +34,8 @@
 
   <main>
     <section class="hero" id="inicio" aria-label="Presentación">
-      <div class="hero-compare" role="group" aria-label="Antes y después de la instalación">
-        <figure class="hero-shot">
+      <div class="hero-compare" id="hero-compare" role="group" aria-label="Comparador de antes y después de la instalación">
+        <figure class="hero-shot hero-shot--before">
           <img
             src="img/antes.png"
             alt="Casa de madera antes: ventanas antiguas de marco oscuro"
@@ -44,7 +44,7 @@
           />
           <figcaption>Antes</figcaption>
         </figure>
-        <figure class="hero-shot">
+        <figure class="hero-shot hero-shot--after">
           <img
             src="img/despues.png"
             alt="Misma casa después: ventanas PVC blancas correderas instaladas"
@@ -53,6 +53,19 @@
           />
           <figcaption>Después</figcaption>
         </figure>
+        <div class="hero-compare-divider" aria-hidden="true">
+          <span><i></i><i></i></span>
+        </div>
+        <input
+          class="hero-compare-control"
+          id="hero-compare-control"
+          type="range"
+          min="0"
+          max="100"
+          value="70"
+          aria-label="Desliza para comparar el antes y el después"
+        />
+        <p class="hero-compare-hint" aria-hidden="true">Desliza para comparar</p>
       </div>
       <div class="hero-content">
         <h1>El cambio que se ve y <span class="hero-underline">se siente</span></h1>

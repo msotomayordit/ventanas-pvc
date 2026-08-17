@@ -29,6 +29,60 @@ if (menuToggle && mainNav && navOverlay) {
   window.addEventListener("resize", () => { if (window.innerWidth >= 720) closeMobileMenu(); });
 }
 
+function initHeroCompare() {
+  const compare = document.getElementById("hero-compare");
+  const control = document.getElementById("hero-compare-control");
+  if (!compare || !control) return;
+
+  let animationFrame = 0;
+  let userInteracted = false;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const setPosition = (value) => {
+    const position = Math.min(100, Math.max(0, Number(value)));
+    compare.style.setProperty("--compare-position", `${position}%`);
+    control.value = String(position);
+  };
+  const stopDemo = () => {
+    userInteracted = true;
+    compare.classList.add("is-interacted");
+    if (animationFrame) cancelAnimationFrame(animationFrame);
+  };
+
+  control.addEventListener("input", () => {
+    stopDemo();
+    setPosition(control.value);
+  });
+  control.addEventListener("pointerdown", stopDemo);
+  control.addEventListener("keydown", stopDemo);
+
+  if (reduceMotion) {
+    setPosition(50);
+    return;
+  }
+
+  const start = performance.now();
+  const animate = (now) => {
+    if (userInteracted) return;
+    const elapsed = now - start;
+    let position;
+    if (elapsed < 1800) {
+      const progress = elapsed / 1800;
+      position = 70 - 40 * (1 - Math.pow(1 - progress, 3));
+    } else if (elapsed < 2200) {
+      position = 30;
+    } else if (elapsed < 2900) {
+      const progress = (elapsed - 2200) / 700;
+      position = 30 + 20 * (1 - Math.pow(1 - progress, 3));
+    } else {
+      setPosition(50);
+      return;
+    }
+    setPosition(position);
+    animationFrame = requestAnimationFrame(animate);
+  };
+  animationFrame = requestAnimationFrame(animate);
+}
+
 function formatMedida(ancho, alto) {
   const a = Number(ancho).toLocaleString("es-CL", {
     minimumFractionDigits: Number.isInteger(Number(ancho)) ? 0 : 1,
@@ -524,6 +578,7 @@ renderStock();
 initAccesorios();
 initCalculadora();
 initCarts();
+initHeroCompare();
 
 const formContacto = document.getElementById("form-contacto");
 
