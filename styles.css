@@ -140,26 +140,29 @@ main {
 
 .hero {
   position: relative;
-  min-height: min(100vh, 52rem);
+  min-height: clamp(34rem, 45vw, 52rem);
   display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(24rem, 2fr);
   align-items: center;
   overflow: hidden;
   color: #f7fafb;
+  background: #102f2d;
 }
 
 .hero-compare {
   --compare-position: 70%;
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
+  top: 50%;
+  bottom: auto;
+  left: 0;
   z-index: 0;
-  width: auto;
-  max-width: 100%;
+  width: 60%;
+  max-width: none;
+  height: auto;
   aspect-ratio: 4 / 3;
   overflow: hidden;
   background: #17232b;
-  transform: translateX(-50%);
+  transform: translateY(-50%);
   touch-action: pan-y;
   user-select: none;
 }
@@ -302,11 +305,45 @@ main {
 .hero-content {
   position: relative;
   z-index: 5;
-  grid-column: 1 / -1;
-  width: min(100% - 2 * var(--space), 40rem);
-  margin: 0 auto 0 var(--space);
-  padding: 0;
-  animation: rise 0.9s ease-out 0.08s both;
+  grid-column: 2;
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: clamp(3rem, 7vw, 7rem) clamp(2rem, 5vw, 5rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255,255,255,.1), transparent 42%),
+    linear-gradient(145deg, #174d48 0%, #0f3432 55%, #10272a 100%);
+  box-shadow: -1.5rem 0 4rem rgba(8, 24, 25, 0.22);
+  animation: none;
+}
+
+.hero-content h1,
+.hero-content .lead,
+.hero-content .cta-group {
+  animation: hero-panel-in 0.72s cubic-bezier(.22,.75,.22,1) both;
+}
+
+.hero-content .lead {
+  animation-delay: 0.14s;
+}
+
+.hero-content .cta-group {
+  animation-delay: 0.26s;
+}
+
+@keyframes hero-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(1.4rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .hero h1 {
@@ -1602,6 +1639,9 @@ main {
 
   .hero-shot img,
   .hero-content,
+  .hero-content h1,
+  .hero-content .lead,
+  .hero-content .cta-group,
   .benefit-list li {
     animation: none;
     opacity: 1;
@@ -2083,6 +2123,7 @@ body.cart-open {
   .hero {
     min-height: 0;
     padding-top: 75%;
+    grid-template-columns: 1fr;
     align-items: end;
     background: #17232b;
   }
@@ -2115,11 +2156,14 @@ body.cart-open {
   .hero-content {
     position: relative;
     z-index: 4;
+    grid-column: 1;
     width: 100%;
     margin: 0;
     align-self: end;
     padding: 5rem 1rem 1.75rem;
+    border-left: 0;
     background: linear-gradient(180deg, transparent, rgba(12,22,32,.92) 28%, #17232b 70%);
+    box-shadow: none;
     animation: none;
     opacity: 1;
     transform: none;
