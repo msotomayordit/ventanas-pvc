@@ -464,6 +464,41 @@ main {
   width: 100%;
 }
 
+@media (max-width: 639px) {
+  .stock-gallery .stock-photo,
+  .stock-gallery .stock-photo--small {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+
+  .stock-gallery .stock-photo--full {
+    aspect-ratio: 1 / 1;
+    min-height: 18rem;
+  }
+
+  .stock-gallery .stock-photo--portrait {
+    aspect-ratio: 3 / 4;
+    min-height: 22rem;
+  }
+
+  .stock-gallery .stock-photo img,
+  .stock-gallery .stock-photo--small img {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    object-fit: contain;
+    object-position: center;
+    transform: none;
+  }
+
+  .stock-gallery .stock-photo:hover img,
+  .stock-gallery .stock-photo--small:hover img {
+    transform: none;
+  }
+}
+
 .stock-info h3 {
   margin: 0;
   font-family: var(--font-display);
@@ -967,6 +1002,22 @@ main {
   margin-bottom: 0;
 }
 
+.acc-hero-photo {
+  margin: 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 0.45rem;
+  overflow: hidden;
+}
+
+.acc-hero-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+}
+
 .laminas-muestra {
   margin: 0;
 }
@@ -1054,10 +1105,31 @@ main {
 }
 
 @media (min-width: 900px) {
-  .acc-header {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 1.75rem 1.5rem;
-    align-items: end;
+  .section-accesorios .acc-header {
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 24rem);
+    grid-template-areas:
+      "intro photo"
+      "laminas photo";
+    gap: 1.25rem 1.5rem;
+    align-items: start;
+  }
+
+  .section-accesorios .acc-header .section-intro {
+    grid-area: intro;
+  }
+
+  .acc-hero-photo {
+    grid-area: photo;
+    align-self: stretch;
+  }
+
+  .acc-hero-photo img {
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .section-accesorios .laminas-muestra {
+    grid-area: laminas;
   }
 
   .laminas-list {
@@ -1162,6 +1234,11 @@ main {
 
 .calc-heading {
   margin: 0 0 1.5rem;
+}
+
+.calc-heading .calc-note {
+  margin-top: 0.85rem;
+  max-width: 42rem;
 }
 
 .acc-header .calc-heading,

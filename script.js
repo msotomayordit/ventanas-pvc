@@ -269,7 +269,16 @@ function renderStock() {
       const precio = formatPrecio(item.precio);
 
       const mismaFoto = item.id >= 1 && item.id <= 13;
-      const photoClass = mismaFoto ? "stock-photo stock-photo--small" : "stock-photo";
+      const fotoCortada = [3, 4, 5, 7, 8, 10].includes(item.id);
+      const fotoVertical = [11, 12, 13].includes(item.id);
+      const photoClass = [
+        "stock-photo",
+        mismaFoto ? "stock-photo--small" : "",
+        fotoCortada ? "stock-photo--full" : "",
+        fotoVertical ? "stock-photo--portrait" : "",
+      ]
+        .filter(Boolean)
+        .join(" ");
       const itemClass = mismaFoto ? "stock-item stock-item--compact" : "stock-item";
 
       return `
