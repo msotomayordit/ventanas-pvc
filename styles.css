@@ -144,11 +144,11 @@ main {
 
 .hero-main {
   position: relative;
-  width: min(100%, var(--max));
-  min-height: clamp(25rem, 41.25vw, 28rem);
+  width: min(calc(100% - 2 * var(--space)), 90rem);
+  min-height: clamp(25rem, 33.33vw, 30rem);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(0, 55fr) minmax(24rem, 45fr);
+  grid-template-columns: minmax(0, 52fr) minmax(25rem, 48fr);
   align-items: center;
   overflow: hidden;
   color: #f7fafb;
@@ -162,7 +162,7 @@ main {
   bottom: 0;
   left: 0;
   z-index: 0;
-  width: 55%;
+  width: 52%;
   max-width: none;
   height: 100%;
   aspect-ratio: auto;
@@ -337,7 +337,7 @@ main {
 }
 
 .hero-bestsellers {
-  min-height: clamp(12rem, calc(100svh - 5rem - clamp(25rem, 41.25vw, 28rem)), 30rem);
+  min-height: clamp(12rem, calc(100svh - 5rem - clamp(25rem, 33.33vw, 30rem)), 30rem);
   padding: 1.15rem var(--space) 1.35rem;
   display: flex;
   flex-direction: column;
@@ -2252,6 +2252,7 @@ body.cart-open {
 
 
   .hero-main {
+    width: 100%;
     min-height: 0;
     padding-top: 75%;
     grid-template-columns: 1fr;
