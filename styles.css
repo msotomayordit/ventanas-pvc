@@ -1806,6 +1806,40 @@ main {
   font-size: 0.84em;
 }
 
+.site-footer .visit-counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  width: fit-content;
+  margin: 0.85rem auto 0.55rem;
+  padding: 0.38rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.site-footer .visit-counter[hidden] {
+  display: none;
+}
+
+.visit-counter-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 0.18rem rgba(15, 110, 106, 0.18);
+}
+
+.site-footer .visit-counter strong {
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: var(--accent-deep);
+  font-variant-numeric: tabular-nums;
+}
+
 @keyframes rise {
   from {
     opacity: 0;
